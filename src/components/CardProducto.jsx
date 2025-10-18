@@ -1,4 +1,3 @@
-// ...existing code...
 import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { CartContext } from "../App";
@@ -17,7 +16,6 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
     producto.seller ||
     "Vendedor";
 
-  // identificador para la tienda (intenta id/email/slug, fallback al nombre)
   const vendedorKey =
     producto.vendedor?.id ||
     producto.vendedorId ||
@@ -29,12 +27,23 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
   const categoria = producto.categoria || producto.tipo || "Sin categoría";
 
   const handleAgregar = () => {
+    // si se pasa función externa desde props
     if (typeof onAgregar === "function") {
       onAgregar(producto);
+      window.dispatchEvent(new Event("carritoActualizado"));
       return;
     }
+
+    // si existe contexto global
     if (typeof addToCart === "function") {
       addToCart(producto);
+      window.dispatchEvent(new Event("carritoActualizado"));
+    } else {
+      // fallback: guardar en localStorage
+      const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+      carrito.push({ ...producto, cantidad: 1 });
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+      window.dispatchEvent(new Event("carritoActualizado"));
     }
   };
 
@@ -48,12 +57,15 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
         borderRadius: 14,
         overflow: "hidden",
         background: "#fff",
-        boxShadow: hover ? "0 14px 40px rgba(10,20,50,0.12)" : "0 6px 18px rgba(10,20,50,0.06)",
+        boxShadow: hover
+          ? "0 14px 40px rgba(10,20,50,0.12)"
+          : "0 6px 18px rgba(10,20,50,0.06)",
         transform: hover ? "translateY(-6px)" : "translateY(0)",
         transition: "all 180ms ease",
         display: "flex",
         flexDirection: "column",
-        fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial"
+        fontFamily:
+          "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
       }}
     >
       <div style={{ position: "relative", height: 150, background: "#f7f7fb" }}>
@@ -62,17 +74,19 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
           alt={producto.nombre || "Producto"}
           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
         />
-        <div style={{
-          position: "absolute",
-          left: 10,
-          top: 10,
-          background: "linear-gradient(90deg, rgba(100,103,255,0.95), rgba(138,107,255,0.95))",
-          color: "#fff",
-          padding: "6px 8px",
-          borderRadius: 8,
-          fontSize: 12,
-          fontWeight: 700
-        }}>
+        <div
+          style={{
+            position: "absolute",
+            left: 10,
+            top: 10,
+            background: "linear-gradient(90deg, rgba(100,103,255,0.95), rgba(138,107,255,0.95))",
+            color: "#fff",
+            padding: "6px 8px",
+            borderRadius: 8,
+            fontSize: 12,
+            fontWeight: 700,
+          }}
+        >
           {categoria}
         </div>
       </div>
@@ -84,7 +98,7 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
           <p style={{ margin: "4px 0 0", fontSize: 13, color: "#6b7280", flex: 1 }}>
-            {(producto.descripcion && producto.descripcion.length > 90)
+            {producto.descripcion && producto.descripcion.length > 90
               ? producto.descripcion.slice(0, 90).trim() + "…"
               : producto.descripcion || "Descripción breve del producto."}
           </p>
@@ -92,26 +106,26 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
 
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{
-              width: 32,
-              height: 32,
-              borderRadius: 999,
-              background: "#eef2ff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#4f46e5",
-              fontWeight: 700,
-              fontSize: 12,
-              flexShrink: 0
-            }}>
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 999,
+                background: "#eef2ff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#4f46e5",
+                fontWeight: 700,
+                fontSize: 12,
+                flexShrink: 0,
+              }}
+            >
               {vendedorNombre[0]?.toUpperCase() || "V"}
             </div>
 
-            {/* Link a la tienda del vendedor */}
             <Link
               to={`/tienda/${encodeURIComponent(String(vendedorKey))}`}
-              onClick={(e) => { /* no hacer nada más aquí */ }}
               style={{ textDecoration: "none", color: "inherit" }}
             >
               <div style={{ display: "flex", flexDirection: "column" }}>
@@ -142,7 +156,7 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
               background: "linear-gradient(90deg,#5b60ff,#8a6bff)",
               color: "#fff",
               fontWeight: 700,
-              boxShadow: "0 6px 18px rgba(91,96,255,0.18)"
+              boxShadow: "0 6px 18px rgba(91,96,255,0.18)",
             }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -157,4 +171,3 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
     </article>
   );
 }
-// ...existing code...

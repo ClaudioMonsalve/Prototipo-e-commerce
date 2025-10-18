@@ -46,6 +46,9 @@ export default function CarritoPage() {
       }
     });
     localStorage.setItem("carrito", JSON.stringify(listaExpandida));
+
+    // 🚀 Dispara evento para actualizar contador en Navbar
+    window.dispatchEvent(new Event("carritoActualizado"));
   };
 
   const incrementar = (index) => {
@@ -111,6 +114,9 @@ export default function CarritoPage() {
     localStorage.removeItem("carrito");
     setDatosTarjeta({ nombre: "", numero: "", vencimiento: "", cvv: "" });
     setMostrarPago(false);
+
+    // Actualizar contador a 0
+    window.dispatchEvent(new Event("carritoActualizado"));
   };
 
   return (
@@ -411,3 +417,4 @@ export default function CarritoPage() {
     </div>
   );
 }
+

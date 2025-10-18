@@ -1,16 +1,28 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-export default function Navbar({ usuario, setUsuario, cartCount }) {
+export default function Navbar({ usuario, setUsuario }) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [count, setCount] = useState(0); // estado interno sincronizado
+  const [count, setCount] = useState(0);
 
-  // sincronizar siempre con localStorage
+  // Mantener el contador siempre sincronizado con el localStorage
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("carrito")) || [];
-    setCount(stored.length); // o sumar las cantidades si quieres total exacto
-  }, [cartCount]); // cartCount puede cambiar desde padre
+    const actualizarContador = () => {
+      const stored = JSON.parse(localStorage.getItem("carrito")) || [];
+      setCount(stored.reduce((acc, p) => acc + (p.cantidad || 1), 0)); // suma las cantidades
+    };
+
+    // Inicializar contador
+    actualizarContador();
+
+    // Escuchar evento global
+    window.addEventListener("carritoActualizado", actualizarContador);
+
+    return () => {
+      window.removeEventListener("carritoActualizado", actualizarContador);
+    };
+  }, []);
 
   const role = usuario?.role || usuario?.rol || usuario?.tipo || "";
   const roleLower = String(role).toLowerCase();
@@ -91,4 +103,3 @@ export default function Navbar({ usuario, setUsuario, cartCount }) {
     </header>
   );
 }
-
