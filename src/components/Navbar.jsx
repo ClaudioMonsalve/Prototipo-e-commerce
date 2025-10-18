@@ -6,17 +6,17 @@ export default function Navbar({ usuario, setUsuario }) {
   const [open, setOpen] = useState(false);
   const [count, setCount] = useState(0);
 
-  // Mantener el contador siempre sincronizado con el localStorage
-  useEffect(() => {
-    const actualizarContador = () => {
-      const stored = JSON.parse(localStorage.getItem("carrito")) || [];
-      setCount(stored.reduce((acc, p) => acc + (p.cantidad || 1), 0)); // suma las cantidades
-    };
+  // Función para actualizar el contador desde localStorage
+  const actualizarContador = () => {
+    const stored = JSON.parse(localStorage.getItem("carrito")) || [];
+    setCount(stored.length);
+  };
 
-    // Inicializar contador
+  useEffect(() => {
+    // Actualizar al montar
     actualizarContador();
 
-    // Escuchar evento global
+    // Escuchar evento global que dispare cualquier CardProducto
     window.addEventListener("carritoActualizado", actualizarContador);
 
     return () => {
