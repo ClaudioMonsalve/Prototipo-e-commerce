@@ -1,0 +1,14 @@
+[
+  {
+    "nombre": "Juan Perez",
+    "numero": "1234567812345678",
+    "vencimiento": "12/25",
+    "cvv": "123"
+  },
+  {
+    "nombre": "Maria Lopez",
+    "numero": "8765432187654321",
+    "vencimiento": "06/24",
+    "cvv": "456"
+  }
+]
