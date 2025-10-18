@@ -11,6 +11,9 @@ export default function CarritoPage() {
     cvv: "",
   });
 
+  // Obtener usuario actual
+  const usuarioActual = JSON.parse(localStorage.getItem("usuarioActual"));
+
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("carrito")) || [];
     if (stored.length === 0) {
@@ -74,6 +77,11 @@ export default function CarritoPage() {
     .toFixed(2);
 
   const handlePagar = () => {
+    if (!usuarioActual) {
+      alert("❌ Debes iniciar sesión para poder pagar");
+      return;
+    }
+
     if (carrito.length === 0) {
       alert("El carrito está vacío");
       return;
@@ -85,7 +93,6 @@ export default function CarritoPage() {
       return;
     }
 
-    // Validar tarjeta contra JSON
     const valida = tarjetasValidas.some(
       (t) =>
         t.nombre === nombre &&
@@ -250,153 +257,157 @@ export default function CarritoPage() {
             Total: ${totalGeneral}
           </div>
 
-          {!mostrarPago ? (
-            <div style={{ textAlign: "right" }}>
-              <button
-                onClick={() => setMostrarPago(true)}
-                style={{
-                  padding: "0.8rem 1.5rem",
-                  backgroundColor: "#646cff",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                }}
-              >
-                Proceder al Pago 💳
-              </button>
-            </div>
-          ) : (
-            <div
-              style={{
-                backgroundColor: "#2a2a2a",
-                padding: "1rem",
-                borderRadius: "8px",
-                marginTop: "1rem",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.4)",
-              }}
-            >
-              <h2
-                style={{
-                  marginBottom: "1rem",
-                  fontSize: "1.3rem",
-                  color: "#fff",
-                }}
-              >
-                Datos de la Tarjeta
-              </h2>
-              <div
-                style={{
-                  display: "grid",
-                  gap: "0.8rem",
-                  gridTemplateColumns: "1fr 1fr",
-                }}
-              >
-                <input
-                  type="text"
-                  placeholder="Nombre en la tarjeta"
-                  value={datosTarjeta.nombre}
-                  onChange={(e) =>
-                    setDatosTarjeta({ ...datosTarjeta, nombre: e.target.value })
-                  }
-                  style={{
-                    padding: "0.6rem",
-                    borderRadius: "6px",
-                    border: "1px solid #555",
-                    backgroundColor: "#1e1e1e",
-                    color: "#fff",
-                  }}
-                />
-                <input
-                  type="text"
-                  placeholder="Número de tarjeta"
-                  value={datosTarjeta.numero}
-                  onChange={(e) =>
-                    setDatosTarjeta({ ...datosTarjeta, numero: e.target.value })
-                  }
-                  style={{
-                    padding: "0.6rem",
-                    borderRadius: "6px",
-                    border: "1px solid #555",
-                    backgroundColor: "#1e1e1e",
-                    color: "#fff",
-                  }}
-                />
-                <input
-                  type="text"
-                  placeholder="MM/AA"
-                  value={datosTarjeta.vencimiento}
-                  onChange={(e) =>
-                    setDatosTarjeta({
-                      ...datosTarjeta,
-                      vencimiento: e.target.value,
-                    })
-                  }
-                  style={{
-                    padding: "0.6rem",
-                    borderRadius: "6px",
-                    border: "1px solid #555",
-                    backgroundColor: "#1e1e1e",
-                    color: "#fff",
-                  }}
-                />
-                <input
-                  type="text"
-                  placeholder="CVV"
-                  value={datosTarjeta.cvv}
-                  onChange={(e) =>
-                    setDatosTarjeta({ ...datosTarjeta, cvv: e.target.value })
-                  }
-                  style={{
-                    padding: "0.6rem",
-                    borderRadius: "6px",
-                    border: "1px solid #555",
-                    backgroundColor: "#1e1e1e",
-                    color: "#fff",
-                  }}
-                />
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "1rem",
-                  marginTop: "1rem",
-                }}
-              >
+          {usuarioActual ? (
+            !mostrarPago ? (
+              <div style={{ textAlign: "right" }}>
                 <button
-                  onClick={() => setMostrarPago(false)}
+                  onClick={() => setMostrarPago(true)}
                   style={{
-                    padding: "0.7rem 1.2rem",
-                    backgroundColor: "#555",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                  }}
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={handlePagar}
-                  style={{
-                    padding: "0.7rem 1.2rem",
-                    backgroundColor: "#28a745",
+                    padding: "0.8rem 1.5rem",
+                    backgroundColor: "#646cff",
                     color: "white",
                     border: "none",
                     borderRadius: "6px",
                     cursor: "pointer",
                   }}
                 >
-                  Confirmar Pago
+                  Proceder al Pago 💳
                 </button>
               </div>
-            </div>
+            ) : (
+              <div
+                style={{
+                  backgroundColor: "#2a2a2a",
+                  padding: "1rem",
+                  borderRadius: "8px",
+                  marginTop: "1rem",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.4)",
+                }}
+              >
+                <h2
+                  style={{
+                    marginBottom: "1rem",
+                    fontSize: "1.3rem",
+                    color: "#fff",
+                  }}
+                >
+                  Datos de la Tarjeta
+                </h2>
+                <div
+                  style={{
+                    display: "grid",
+                    gap: "0.8rem",
+                    gridTemplateColumns: "1fr 1fr",
+                  }}
+                >
+                  <input
+                    type="text"
+                    placeholder="Nombre en la tarjeta"
+                    value={datosTarjeta.nombre}
+                    onChange={(e) =>
+                      setDatosTarjeta({ ...datosTarjeta, nombre: e.target.value })
+                    }
+                    style={{
+                      padding: "0.6rem",
+                      borderRadius: "6px",
+                      border: "1px solid #555",
+                      backgroundColor: "#1e1e1e",
+                      color: "#fff",
+                    }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Número de tarjeta"
+                    value={datosTarjeta.numero}
+                    onChange={(e) =>
+                      setDatosTarjeta({ ...datosTarjeta, numero: e.target.value })
+                    }
+                    style={{
+                      padding: "0.6rem",
+                      borderRadius: "6px",
+                      border: "1px solid #555",
+                      backgroundColor: "#1e1e1e",
+                      color: "#fff",
+                    }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="MM/AA"
+                    value={datosTarjeta.vencimiento}
+                    onChange={(e) =>
+                      setDatosTarjeta({
+                        ...datosTarjeta,
+                        vencimiento: e.target.value,
+                      })
+                    }
+                    style={{
+                      padding: "0.6rem",
+                      borderRadius: "6px",
+                      border: "1px solid #555",
+                      backgroundColor: "#1e1e1e",
+                      color: "#fff",
+                    }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="CVV"
+                    value={datosTarjeta.cvv}
+                    onChange={(e) =>
+                      setDatosTarjeta({ ...datosTarjeta, cvv: e.target.value })
+                    }
+                    style={{
+                      padding: "0.6rem",
+                      borderRadius: "6px",
+                      border: "1px solid #555",
+                      backgroundColor: "#1e1e1e",
+                      color: "#fff",
+                    }}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    gap: "1rem",
+                    marginTop: "1rem",
+                  }}
+                >
+                  <button
+                    onClick={() => setMostrarPago(false)}
+                    style={{
+                      padding: "0.7rem 1.2rem",
+                      backgroundColor: "#555",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handlePagar}
+                    style={{
+                      padding: "0.7rem 1.2rem",
+                      backgroundColor: "#28a745",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Confirmar Pago
+                  </button>
+                </div>
+              </div>
+            )
+          ) : (
+            <p style={{ textAlign: "center", color: "#ff4d4f", fontWeight: "bold" }}>
+              ❌ Debes iniciar sesión para poder pagar
+            </p>
           )}
         </>
       )}
     </div>
   );
 }
-
-
