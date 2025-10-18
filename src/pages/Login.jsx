@@ -24,7 +24,7 @@ export default function Login({ setUsuario }) {
     // Login exitoso
     localStorage.setItem("usuarioActual", JSON.stringify(user));
     setUsuario(user);
-    alert(`Bienvenido, ${user.email}`);
+    alert(`Bienvenido, ${user.nombre}`);
     navigate("/");
   };
 
