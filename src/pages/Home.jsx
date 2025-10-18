@@ -1,32 +1,33 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CardProducto from "../components/CardProducto";
+import { CartContext } from "../App";
 
 export default function Home() {
+  const { addToCart } = useContext(CartContext); // Context para el carrito
   const [productos, setProductos] = useState([]);
   const [filtrados, setFiltrados] = useState([]);
   const location = useLocation();
   const navigate = useNavigate();
 
-  // q mantiene el valor del input de búsqueda en la UI
   const [q, setQ] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get("q") || "";
   });
 
-  // cargar productos desde localStorage (o array vacío)
+  // Cargar productos desde localStorage
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("productos")) || [];
     setProductos(stored);
   }, []);
 
-  // sincronizar input con cambios en la URL (ej: back/forward)
+  // Sincronizar input con cambios en la URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     setQ(params.get("q") || "");
   }, [location.search]);
 
-  // aplicar búsqueda y sort cuando cambian query params o productos
+  // Filtrar y ordenar productos
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const qParam = (params.get("q") || "").trim().toLowerCase();
@@ -36,21 +37,16 @@ export default function Home() {
 
     if (qParam) {
       list = list.filter(p => {
-        const nombre = (p.nombre || "").toString().toLowerCase();
-        const desc = (p.descripcion || "").toString().toLowerCase();
+        const nombre = (p.nombre || "").toLowerCase();
+        const desc = (p.descripcion || "").toLowerCase();
         return nombre.includes(qParam) || desc.includes(qParam);
       });
     }
 
-    if (sort === "price-desc") {
-      list.sort((a,b) => (Number(b.precio) || 0) - (Number(a.precio) || 0));
-    } else if (sort === "price-asc") {
-      list.sort((a,b) => (Number(a.precio) || 0) - (Number(b.precio) || 0));
-    } else if (sort === "name-asc") {
-      list.sort((a,b) => (a.nombre || "").localeCompare(b.nombre || ""));
-    } else if (sort === "name-desc") {
-      list.sort((a,b) => (b.nombre || "").localeCompare(a.nombre || ""));
-    }
+    if (sort === "price-desc") list.sort((a,b) => (Number(b.precio) || 0) - (Number(a.precio) || 0));
+    else if (sort === "price-asc") list.sort((a,b) => (Number(a.precio) || 0) - (Number(b.precio) || 0));
+    else if (sort === "name-asc") list.sort((a,b) => (a.nombre || "").localeCompare(b.nombre || ""));
+    else if (sort === "name-desc") list.sort((a,b) => (b.nombre || "").localeCompare(a.nombre || ""));
 
     setFiltrados(list);
   }, [location.search, productos]);
@@ -59,7 +55,6 @@ export default function Home() {
     const params = new URLSearchParams(location.search);
     if (value) params.set("sort", value);
     else params.delete("sort");
-    // conservar q si existe
     const qParam = new URLSearchParams(location.search).get("q");
     if (qParam) params.set("q", qParam);
     navigate({ pathname: "/", search: params.toString() });
@@ -70,7 +65,6 @@ export default function Home() {
     const params = new URLSearchParams(location.search);
     if (q && q.trim() !== "") params.set("q", q.trim());
     else params.delete("q");
-    // conservar sort si existe
     const sortParam = new URLSearchParams(location.search).get("sort");
     if (sortParam) params.set("sort", sortParam);
     navigate({ pathname: "/", search: params.toString() });
@@ -118,7 +112,7 @@ export default function Home() {
       ) : (
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
           {filtrados.map((p, i) => (
-            <CardProducto key={i} producto={p} />
+            <CardProducto key={i} producto={p} onAgregar={addToCart} />
           ))}
         </div>
       )}
