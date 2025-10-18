@@ -1,4 +1,3 @@
-// ...existing code...
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CardProducto from "../components/CardProducto";
@@ -126,4 +125,3 @@ export default function Home() {
     </main>
   );
 }
-// ...existing code...
