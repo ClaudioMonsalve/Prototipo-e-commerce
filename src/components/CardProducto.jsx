@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import { CartContext } from "../App";
+import { CartContext } from "../App"; // ajusta la ruta si hace falta
 
 export default function CardProducto({ producto = {}, onAgregar = null }) {
   const [hover, setHover] = useState(false);
@@ -26,25 +26,52 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
 
   const categoria = producto.categoria || producto.tipo || "Sin categoría";
 
+  const fallbackAddToLocalStorage = (productoToAdd) => {
+    // En tu app el carrito en localStorage era una lista de "unidades".
+    // Para mantener compatibilidad con CarritoPage que agrupa por nombre,
+    // añadimos una unidad por cada click (no usamos objeto {cantidad:1} aquí).
+    try {
+      const lista = JSON.parse(localStorage.getItem("carrito")) || [];
+
+      // crear unidad mínima que usas en el resto del código
+      const unidad = {
+        nombre: productoToAdd.nombre || "Sin nombre",
+        precio: Number(productoToAdd.precio) || 0,
+        imagen: productoToAdd.imagen || "https://via.placeholder.com/150",
+        // opcional: mantener id si existe, ayuda a futuras comparaciones
+        id: productoToAdd.id ?? null,
+      };
+
+      lista.push(unidad);
+      localStorage.setItem("carrito", JSON.stringify(lista));
+
+      // evento de compatibilidad para Navbars que escuchan window
+      window.dispatchEvent(new Event("carritoActualizado"));
+    } catch (e) {
+      console.error("Error al actualizar localStorage carrito:", e);
+    }
+  };
+
   const handleAgregar = () => {
-    // si se pasa función externa desde props
+    // Si se pasó una función por props (Home pasa onAgregar={addToCart}), usarla
     if (typeof onAgregar === "function") {
       onAgregar(producto);
+      // compatibilidad: si alguien usa el event listener en Navbar
       window.dispatchEvent(new Event("carritoActualizado"));
       return;
     }
 
-    // si existe contexto global
+    // Si existe contexto (recomendado), usarlo
     if (typeof addToCart === "function") {
       addToCart(producto);
+      // no estrictamente necesario si App sincroniza localStorage en useEffect,
+      // pero mantener event por compatibilidad con código aún dependiente.
       window.dispatchEvent(new Event("carritoActualizado"));
-    } else {
-      // fallback: guardar en localStorage
-      const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-      carrito.push({ ...producto, cantidad: 1 });
-      localStorage.setItem("carrito", JSON.stringify(carrito));
-      window.dispatchEvent(new Event("carritoActualizado"));
+      return;
     }
+
+    // Fallback: si no hay contexto ni prop, escribir directamente en localStorage
+    fallbackAddToLocalStorage(producto);
   };
 
   return (
@@ -79,7 +106,8 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
             position: "absolute",
             left: 10,
             top: 10,
-            background: "linear-gradient(90deg, rgba(100,103,255,0.95), rgba(138,107,255,0.95))",
+            background:
+              "linear-gradient(90deg, rgba(100,103,255,0.95), rgba(138,107,255,0.95))",
             color: "#fff",
             padding: "6px 8px",
             borderRadius: 8,
@@ -124,10 +152,7 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
               {vendedorNombre[0]?.toUpperCase() || "V"}
             </div>
 
-            <Link
-              to={`/tienda/${encodeURIComponent(String(vendedorKey))}`}
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
+            <Link to={`/tienda/${encodeURIComponent(String(vendedorKey))}`} style={{ textDecoration: "none", color: "inherit" }}>
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <span style={{ fontSize: 12, color: "#6b7280" }}>Vendido por</span>
                 <strong style={{ fontSize: 13, color: "#0f172a" }}>{vendedorNombre}</strong>
@@ -160,9 +185,9 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
             }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M3 3h2l.4 2M7 13h10l4-8H5.4" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              <circle cx="10" cy="20" r="1" fill="white"/>
-              <circle cx="18" cy="20" r="1" fill="white"/>
+              <path d="M3 3h2l.4 2M7 13h10l4-8H5.4" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="10" cy="20" r="1" fill="white" />
+              <circle cx="18" cy="20" r="1" fill="white" />
             </svg>
             Agregar
           </button>
