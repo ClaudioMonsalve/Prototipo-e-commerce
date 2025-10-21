@@ -8,27 +8,39 @@ export default function Inventario() {
   const [cantidad, setCantidad] = useState("");
   const [precio, setPrecio] = useState("");
 
+  // Obtener usuario activo
+  const usuarioActivo =
+    JSON.parse(localStorage.getItem("usuarioActivo"))?.nombre ||
+    localStorage.getItem("usuarioActivo") ||
+    "Vendedor Anónimo";
+
   // Cargar productos desde localStorage al iniciar
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("productos")) || [];
-    setProductos(stored);
-  }, []);
+    const todos = JSON.parse(localStorage.getItem("productos")) || [];
+    // Mostrar solo los del usuario actual
+    const propios = todos.filter(
+      (p) => p.vendedor === usuarioActivo
+    );
+    setProductos(propios);
+  }, [usuarioActivo]);
 
-  // Guardar productos en localStorage cada vez que cambien
+  // Guardar productos (sin perder los de otros vendedores)
   useEffect(() => {
-    localStorage.setItem("productos", JSON.stringify(productos));
-  }, [productos]);
+    if (productos.length === 0) return;
+
+    const todos = JSON.parse(localStorage.getItem("productos")) || [];
+
+    // Filtramos productos antiguos del mismo vendedor
+    const otros = todos.filter((p) => p.vendedor !== usuarioActivo);
+
+    // Guardamos combinación: los otros + los nuevos del usuario actual
+    localStorage.setItem("productos", JSON.stringify([...otros, ...productos]));
+  }, [productos, usuarioActivo]);
 
   // Agregar producto
   const handleSubmit = (e) => {
     e.preventDefault();
     const total = (Number(cantidad) * Number(precio)).toFixed(2);
-
-    // obtener usuario activo si existe
-    const vendedorActivo =
-      JSON.parse(localStorage.getItem("usuarioActivo"))?.nombre ||
-      localStorage.getItem("usuarioActivo") ||
-      "Vendedor Anónimo";
 
     const nuevoProducto = {
       id: Date.now(),
@@ -38,7 +50,7 @@ export default function Inventario() {
       total,
       descripcion: "Producto agregado desde el inventario.",
       imagen: "https://via.placeholder.com/150",
-      vendedor: vendedorActivo,
+      vendedor: usuarioActivo,
       categoria: "Inventario"
     };
 
@@ -51,7 +63,13 @@ export default function Inventario() {
 
   // Eliminar producto
   const handleEliminar = (id) => {
-    setProductos(productos.filter((p) => p.id !== id));
+    const nuevos = productos.filter((p) => p.id !== id);
+    setProductos(nuevos);
+
+    // También eliminar del localStorage global
+    const todos = JSON.parse(localStorage.getItem("productos")) || [];
+    const actualizados = todos.filter((p) => p.id !== id);
+    localStorage.setItem("productos", JSON.stringify(actualizados));
   };
 
   return (
@@ -91,35 +109,41 @@ export default function Inventario() {
 
       <section className="tabla-section">
         <h2>Inventario Actual</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Producto</th>
-              <th>Cantidad</th>
-              <th>Precio ($)</th>
-              <th>Total</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {productos.map((p) => (
-              <tr key={p.id}>
-                <td>{p.nombre}</td>
-                <td>{p.cantidad}</td>
-                <td>${Number(p.precio).toFixed(2)}</td>
-                <td>${p.total}</td>
-                <td>
-                  <button
-                    onClick={() => handleEliminar(p.id)}
-                    className="eliminar"
-                  >
-                    Eliminar
-                  </button>
-                </td>
+        {productos.length === 0 ? (
+          <p style={{ textAlign: "center", marginTop: 10 }}>
+            No tienes productos en tu inventario.
+          </p>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio ($)</th>
+                <th>Total</th>
+                <th>Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {productos.map((p) => (
+                <tr key={p.id}>
+                  <td>{p.nombre}</td>
+                  <td>{p.cantidad}</td>
+                  <td>${Number(p.precio).toFixed(2)}</td>
+                  <td>${p.total}</td>
+                  <td>
+                    <button
+                      onClick={() => handleEliminar(p.id)}
+                      className="eliminar"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </section>
 
       <footer>
