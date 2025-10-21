@@ -6,14 +6,17 @@ export default function Inventario() {
   const [nombre, setNombre] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [precio, setPrecio] = useState("");
-  const [usuarioActivo, setUsuarioActivo] = useState("Vendedor Anónimo");
+  const [usuarioActivo, setUsuarioActivo] = useState(null); // null hasta cargar
 
-  // Cargar usuario activo correctamente
+  // Cargar usuario activo solo en el cliente
   useEffect(() => {
+    if (typeof window === "undefined") return; // previene SSR
     try {
       const data = localStorage.getItem("usuarioActivo");
-      if (!data) return; // si no hay usuario activo, queda Anónimo
-
+      if (!data) {
+        setUsuarioActivo("Vendedor Anónimo");
+        return;
+      }
       const parsed = JSON.parse(data);
       setUsuarioActivo(parsed?.nombre || String(data));
     } catch {
@@ -21,8 +24,9 @@ export default function Inventario() {
     }
   }, []);
 
-  // Cargar productos del usuario actual
+  // Cargar productos solo cuando usuarioActivo esté definido
   useEffect(() => {
+    if (!usuarioActivo) return;
     const todos = JSON.parse(localStorage.getItem("productos")) || [];
     const propios = todos.filter((p) => p.vendedor === usuarioActivo);
     setProductos(propios);
@@ -30,6 +34,7 @@ export default function Inventario() {
 
   // Guardar productos sin perder los de otros vendedores
   useEffect(() => {
+    if (!usuarioActivo) return;
     const todos = JSON.parse(localStorage.getItem("productos")) || [];
     const otros = todos.filter((p) => p.vendedor !== usuarioActivo);
     localStorage.setItem("productos", JSON.stringify([...otros, ...productos]));
@@ -37,6 +42,7 @@ export default function Inventario() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!usuarioActivo) return; // prevenir agregar si aún no cargó usuario
     const total = (Number(cantidad) * Number(precio)).toFixed(2);
 
     const nuevoProducto = {
@@ -65,6 +71,9 @@ export default function Inventario() {
     const actualizados = todos.filter((p) => p.id !== id);
     localStorage.setItem("productos", JSON.stringify(actualizados));
   };
+
+  // Mientras carga usuario, no mostrar nada
+  if (!usuarioActivo) return null;
 
   return (
     <main>
