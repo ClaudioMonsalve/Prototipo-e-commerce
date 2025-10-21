@@ -41,6 +41,9 @@ export default function Inventario() {
 
     const total = (Number(cantidad) * Number(precio)).toFixed(2);
 
+    const sellerNombre = usuario?.nombre || usuario?.email || "Vendedor";
+    const sellerId = usuario?.id || usuario?.email || sellerNombre.toString().replace(/\s+/g, "").toLowerCase();
+
     const nuevoProducto = {
       id: Date.now(),
       nombre: nombre.trim(),
