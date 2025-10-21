@@ -78,8 +78,8 @@ export default function Navbar({ usuario, setUsuario }) {
             {open && (
               <div style={{ position: "absolute", top: "3.4rem", right: "6rem", background: "#fff", color: "#111", borderRadius: 8, boxShadow: "0 6px 20px rgba(0,0,0,0.12)", padding: "8px", minWidth: 160, zIndex: 40 }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <button onClick={() => { setOpen(false); handleLogout(); }} style={{ textAlign: "left", background: "transparent", border: "none", padding: "6px 8px", cursor: "pointer" }}>Salir</button>
-                  <button onClick={() => { setOpen(false); handleDeleteAccount(); }} style={{ textAlign: "left", background: "transparent", border: "none", padding: "6px 8px", cursor: "pointer", color: "#b91c1c" }}>Eliminar cuenta</button>
+                  <button onClick={() => { setOpen(false); handleLogout(); }} style={{ textAlign: "left", background: "#fff", border: "none", padding: "6px 8px", cursor: "pointer", color: "#111" }}>Salir</button>
+                  <button onClick={() => { setOpen(false); handleDeleteAccount(); }} style={{ textAlign: "left", background: "#fff", border: "none", padding: "6px 8px", cursor: "pointer", color: "#b91c1c" }}>Eliminar cuenta</button>
                 </div>
               </div>
             )}
