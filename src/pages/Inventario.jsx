@@ -16,7 +16,7 @@ export default function Inventario() {
 
   // Guardar productos en localStorage cada vez que cambien
   useEffect(() => {
-    localStorage.setItem("inventario", JSON.stringify(productos));
+    localStorage.setItem("productos", JSON.stringify(productos));
   }, [productos]);
 
   // Agregar producto
