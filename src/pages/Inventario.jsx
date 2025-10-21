@@ -3,41 +3,47 @@ import "./Inventario.css";
 
 export default function Inventario() {
   const [productos, setProductos] = useState([]);
+  const [usuarioActivo, setUsuarioActivo] = useState("");
 
   const [nombre, setNombre] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [precio, setPrecio] = useState("");
 
-  // Obtener usuario activo
-  const usuarioActivo =
-    JSON.parse(localStorage.getItem("usuarioActivo"))?.nombre ||
-    localStorage.getItem("usuarioActivo") ||
-    "Vendedor Anónimo";
-
-  // Cargar productos desde localStorage al iniciar
+  // ✅ Cargar usuario activo solo en el navegador
   useEffect(() => {
+    try {
+      const data = localStorage.getItem("usuarioActivo");
+      if (data) {
+        const parsed = JSON.parse(data);
+        setUsuarioActivo(parsed?.nombre || data);
+      } else {
+        setUsuarioActivo("Vendedor Anónimo");
+      }
+    } catch {
+      setUsuarioActivo("Vendedor Anónimo");
+    }
+  }, []);
+
+  // ✅ Cargar productos desde localStorage al iniciar
+  useEffect(() => {
+    if (!usuarioActivo) return; // Esperar a que se cargue el usuario
+
     const todos = JSON.parse(localStorage.getItem("productos")) || [];
-    // Mostrar solo los del usuario actual
-    const propios = todos.filter(
-      (p) => p.vendedor === usuarioActivo
-    );
+    const propios = todos.filter((p) => p.vendedor === usuarioActivo);
     setProductos(propios);
   }, [usuarioActivo]);
 
-  // Guardar productos (sin perder los de otros vendedores)
+  // ✅ Guardar productos sin borrar los de otros vendedores
   useEffect(() => {
+    if (!usuarioActivo) return;
     if (productos.length === 0) return;
 
     const todos = JSON.parse(localStorage.getItem("productos")) || [];
-
-    // Filtramos productos antiguos del mismo vendedor
     const otros = todos.filter((p) => p.vendedor !== usuarioActivo);
-
-    // Guardamos combinación: los otros + los nuevos del usuario actual
     localStorage.setItem("productos", JSON.stringify([...otros, ...productos]));
   }, [productos, usuarioActivo]);
 
-  // Agregar producto
+  // ➕ Agregar producto
   const handleSubmit = (e) => {
     e.preventDefault();
     const total = (Number(cantidad) * Number(precio)).toFixed(2);
@@ -50,23 +56,21 @@ export default function Inventario() {
       total,
       descripcion: "Producto agregado desde el inventario.",
       imagen: "https://via.placeholder.com/150",
-      vendedor: { nombre: usuarioActivo },
+      vendedor: usuarioActivo,
       categoria: "Inventario"
     };
 
     setProductos([nuevoProducto, ...productos]);
-
     setNombre("");
     setCantidad("");
     setPrecio("");
   };
 
-  // Eliminar producto
+  // 🗑️ Eliminar producto
   const handleEliminar = (id) => {
     const nuevos = productos.filter((p) => p.id !== id);
     setProductos(nuevos);
 
-    // También eliminar del localStorage global
     const todos = JSON.parse(localStorage.getItem("productos")) || [];
     const actualizados = todos.filter((p) => p.id !== id);
     localStorage.setItem("productos", JSON.stringify(actualizados));
@@ -76,6 +80,11 @@ export default function Inventario() {
     <main>
       <header>
         <h1>📦 Sistema de Gestión de Inventario</h1>
+        {usuarioActivo && (
+          <p style={{ textAlign: "center", marginTop: "5px", color: "#444" }}>
+            Sesión activa: <strong>{usuarioActivo}</strong>
+          </p>
+        )}
       </header>
 
       <section className="form-section">
@@ -152,5 +161,3 @@ export default function Inventario() {
     </main>
   );
 }
-
-
