@@ -1,34 +1,23 @@
 import { useState, useEffect } from "react";
-import "./Inventario.css"; 
+import "./Inventario.css"; // tu CSS va aquí
 
-export default function Inventario({ usuario }) { // <-- recibe usuario como prop
+export default function Inventario() {
   const [productos, setProductos] = useState([]);
 
   const [nombre, setNombre] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [precio, setPrecio] = useState("");
 
-  // Cargar productos desde localStorage al iniciar, filtrando por vendedor
+  // Cargar productos desde localStorage al iniciar
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("inventario")) || [];
-    if (usuario?.id || usuario?.email) {
-      const userId = usuario.id || usuario.email;
-      setProductos(stored.filter(p => p.vendedorId === userId));
-    } else {
-      setProductos([]);
-    }
-  }, [usuario]);
+    setProductos(stored);
+  }, []);
 
   // Guardar productos en localStorage cada vez que cambien
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("inventario")) || [];
-    
-    // Productos de otros vendedores
-    const otros = stored.filter(p => p.vendedorId !== (usuario.id || usuario.email));
-
-    // Guardar la unión: otros + los del vendedor actual
-    localStorage.setItem("inventario", JSON.stringify([...productos, ...otros]));
-  }, [productos, usuario]);
+    localStorage.setItem("inventario", JSON.stringify(productos));
+  }, [productos]);
 
   // Agregar producto
   const handleSubmit = (e) => {
@@ -40,8 +29,7 @@ export default function Inventario({ usuario }) { // <-- recibe usuario como pro
       nombre,
       cantidad,
       precio,
-      total,
-      vendedorId: usuario.id || usuario.email, // <-- asignamos vendedor
+      total
     };
 
     setProductos([nuevoProducto, ...productos]);
@@ -127,5 +115,4 @@ export default function Inventario({ usuario }) { // <-- recibe usuario como pro
     </main>
   );
 }
-
 
