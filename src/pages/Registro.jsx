@@ -72,7 +72,7 @@ export default function Registro() {
           <button type="submit" style={{ padding: "10px 14px", background: "#4f46e5", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
             Registrarse
           </button>
-          <button type="button" onClick={() => navigate("/login")} style={{ padding: "10px 14px", borderRadius: 8, border: "1px solid #ddd", background: "transparent", cursor: "pointer" }}>
+          <button type="button" onClick={() => navigate("/login")} style={{ padding: "10px 14px", borderRadius: 8, border: "1px solid #ddd", background: "#4f46e5", cursor: "pointer" }}>
             Ir a Login
           </button>
         </div>
