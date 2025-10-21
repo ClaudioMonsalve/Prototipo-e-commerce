@@ -1,86 +1,47 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function Inventario({ usuario }) {
+export default function Inventario() {
   const [productos, setProductos] = useState([]);
   const [nombre, setNombre] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [precio, setPrecio] = useState("");
-  const [imagenFile, setImagenFile] = useState(null);
 
-  // Definir usuario activo
-  const usuarioActivo = usuario?.nombre || usuario?.email || "Vendedor";
-
-  // Cargar productos del usuario actual
+  // Cargar productos desde localStorage al iniciar
   useEffect(() => {
-    const todos = JSON.parse(localStorage.getItem("productos")) || [];
-    const propios = todos.filter((p) => {
-      const vendedorId = p?.vendedor?.id || p?.vendedorId || p?.vendedor?.email || p?.email;
-      const userId = usuario?.id || usuario?.email;
-      return vendedorId && userId && String(vendedorId).toLowerCase() === String(userId).toLowerCase();
-    });
-    setProductos(propios);
-  }, [usuario]);
+    const stored = JSON.parse(localStorage.getItem("productos")) || [];
+    setProductos(stored);
+  }, []);
 
-  // Guardar productos en localStorage sin perder los de otros vendedores
+  // Guardar productos en localStorage cada vez que cambian
   useEffect(() => {
-    const todos = JSON.parse(localStorage.getItem("productos")) || [];
-    const otros = todos.filter((p) => {
-      const vendedorId = p?.vendedor?.id || p?.vendedorId || p?.vendedor?.email || p?.email;
-      const userId = usuario?.id || usuario?.email;
-      return vendedorId !== userId;
-    });
-    localStorage.setItem("productos", JSON.stringify([...otros, ...productos]));
-  }, [productos, usuario]);
+    localStorage.setItem("productos", JSON.stringify(productos));
+  }, [productos]);
 
-  const handleSubmit = (e) => {
+  const handleAdd = (e) => {
     e.preventDefault();
-    const total = (Number(cantidad) * Number(precio)).toFixed(2);
+    if (!nombre.trim() || cantidad <= 0 || precio <= 0) return;
 
-    const nuevoProducto = {
-      id: Date.now(),
-      nombre,
-      cantidad,
-      precio: Number(precio),
-      total,
-      descripcion: "Producto agregado desde el inventario.",
-      imagen: imagenFile || "https://via.placeholder.com/150",
-      vendedor: { nombre: usuarioActivo, id: usuario?.id || usuario?.email },
-      categoria: "Inventario",
-    };
+    const nuevo = { nombre: nombre.trim(), cantidad: Number(cantidad), precio: Number(precio) };
+    setProductos((prev) => [...prev, nuevo]);
 
-    setProductos([nuevoProducto, ...productos]);
     setNombre("");
     setCantidad("");
     setPrecio("");
-    setImagenFile(null);
   };
 
-  const handleEliminar = (id) => {
-    const nuevos = productos.filter((p) => p.id !== id);
-    setProductos(nuevos);
-
-    const todos = JSON.parse(localStorage.getItem("productos")) || [];
-    const actualizados = todos.filter((p) => p.id !== id);
-    localStorage.setItem("productos", JSON.stringify(actualizados));
-  };
-
-  const handleImagenChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => setImagenFile(reader.result);
-    reader.readAsDataURL(file);
+  const handleEliminar = (index) => {
+    setProductos((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
-    <main>
+    <main style={{ maxWidth: 800, margin: "2rem auto", padding: "0 1rem" }}>
       <header>
-        <h1>📦 Inventario de {usuarioActivo}</h1>
+        <h1>📦 Sistema de Gestión de Inventario</h1>
       </header>
 
-      <section style={{ marginTop: 16 }}>
+      <section style={{ marginBottom: 24 }}>
         <h2>Agregar Producto</h2>
-        <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12, maxWidth: 500 }}>
+        <form onSubmit={handleAdd} style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <input
             type="text"
             placeholder="Nombre del producto"
@@ -103,46 +64,46 @@ export default function Inventario({ usuario }) {
             onChange={(e) => setPrecio(e.target.value)}
             required
           />
-          <input type="file" accept="image/*" onChange={handleImagenChange} />
-          <button type="submit">Agregar Producto</button>
+          <button type="submit">Agregar</button>
         </form>
       </section>
 
-      <section style={{ marginTop: 32 }}>
+      <section>
         <h2>Inventario Actual</h2>
-        {productos.length === 0 ? (
-          <p>No tienes productos en tu inventario.</p>
-        ) : (
-          <table border="1" cellPadding="6" style={{ borderCollapse: "collapse", width: "100%" }}>
-            <thead>
-              <tr>
-                <th>Imagen</th>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio ($)</th>
-                <th>Total ($)</th>
-                <th>Acciones</th>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Precio ($)</th>
+              <th>Total</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {productos.map((p, index) => (
+              <tr key={index}>
+                <td>{p.nombre}</td>
+                <td>{p.cantidad}</td>
+                <td>${p.precio.toFixed(2)}</td>
+                <td>${(p.cantidad * p.precio).toFixed(2)}</td>
+                <td>
+                  <button onClick={() => handleEliminar(index)}>Eliminar</button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {productos.map((p) => (
-                <tr key={p.id}>
-                  <td>
-                    <img src={p.imagen} alt={p.nombre} width="60" height="60" />
-                  </td>
-                  <td>{p.nombre}</td>
-                  <td>{p.cantidad}</td>
-                  <td>{p.precio.toFixed(2)}</td>
-                  <td>{p.total}</td>
-                  <td>
-                    <button onClick={() => handleEliminar(p.id)}>Eliminar</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+            ))}
+            {productos.length === 0 && (
+              <tr>
+                <td colSpan="5" style={{ textAlign: "center", padding: 8 }}>No hay productos en el inventario.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </section>
+
+      <footer style={{ marginTop: 24 }}>
+        <p>© 2025 Sistema de Inventario | Hecho por 🧠</p>
+      </footer>
     </main>
   );
 }
