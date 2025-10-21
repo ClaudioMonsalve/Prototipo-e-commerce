@@ -47,7 +47,7 @@ export default function CarritoPage() {
     });
     localStorage.setItem("carrito", JSON.stringify(listaExpandida));
 
-    // 🚀 Dispara evento para actualizar contador en Navbar
+    // Actualiza contador en Navbar si tienes
     window.dispatchEvent(new Event("carritoActualizado"));
   };
 
@@ -115,7 +115,6 @@ export default function CarritoPage() {
     setDatosTarjeta({ nombre: "", numero: "", vencimiento: "", cvv: "" });
     setMostrarPago(false);
 
-    // Actualizar contador a 0
     window.dispatchEvent(new Event("carritoActualizado"));
   };
 
@@ -135,7 +134,7 @@ export default function CarritoPage() {
           textAlign: "center",
           marginBottom: "2rem",
           fontSize: "1.8rem",
-          color: "#ffffff",
+          color: "#fff",
         }}
       >
         🛒 Tu Carrito
@@ -204,8 +203,8 @@ export default function CarritoPage() {
                         onClick={() => decrementar(i)}
                         style={{
                           marginRight: "0.5rem",
-                          backgroundColor: "#444",
-                          color: "#fff",
+                          backgroundColor: "#ddd",
+                          color: "#111",
                           border: "none",
                           padding: "0.3rem 0.6rem",
                           borderRadius: "4px",
@@ -219,8 +218,8 @@ export default function CarritoPage() {
                         onClick={() => incrementar(i)}
                         style={{
                           marginLeft: "0.5rem",
-                          backgroundColor: "#444",
-                          color: "#fff",
+                          backgroundColor: "#ddd",
+                          color: "#111",
                           border: "none",
                           padding: "0.3rem 0.6rem",
                           borderRadius: "4px",
@@ -235,7 +234,7 @@ export default function CarritoPage() {
                       <button
                         onClick={() => eliminar(i)}
                         style={{
-                          backgroundColor: "#ff4d4f",
+                          backgroundColor: "#4f46e5",
                           color: "white",
                           border: "none",
                           padding: "0.4rem 0.8rem",
@@ -270,7 +269,7 @@ export default function CarritoPage() {
                   onClick={() => setMostrarPago(true)}
                   style={{
                     padding: "0.8rem 1.5rem",
-                    backgroundColor: "#646cff",
+                    backgroundColor: "#4f46e5",
                     color: "white",
                     border: "none",
                     borderRadius: "6px",
@@ -283,18 +282,19 @@ export default function CarritoPage() {
             ) : (
               <div
                 style={{
-                  backgroundColor: "#2a2a2a",
+                  backgroundColor: "#fff",
                   padding: "1rem",
                   borderRadius: "8px",
                   marginTop: "1rem",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.4)",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                  color: "#111",
                 }}
               >
                 <h2
                   style={{
                     marginBottom: "1rem",
                     fontSize: "1.3rem",
-                    color: "#fff",
+                    color: "#4f46e5",
                   }}
                 >
                   Datos de la Tarjeta
@@ -316,9 +316,9 @@ export default function CarritoPage() {
                     style={{
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #555",
-                      backgroundColor: "#1e1e1e",
-                      color: "#fff",
+                      border: "1px solid #ccc",
+                      backgroundColor: "#f5f5f5",
+                      color: "#111",
                     }}
                   />
                   <input
@@ -331,9 +331,9 @@ export default function CarritoPage() {
                     style={{
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #555",
-                      backgroundColor: "#1e1e1e",
-                      color: "#fff",
+                      border: "1px solid #ccc",
+                      backgroundColor: "#f5f5f5",
+                      color: "#111",
                     }}
                   />
                   <input
@@ -341,17 +341,14 @@ export default function CarritoPage() {
                     placeholder="MM/AA"
                     value={datosTarjeta.vencimiento}
                     onChange={(e) =>
-                      setDatosTarjeta({
-                        ...datosTarjeta,
-                        vencimiento: e.target.value,
-                      })
+                      setDatosTarjeta({ ...datosTarjeta, vencimiento: e.target.value })
                     }
                     style={{
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #555",
-                      backgroundColor: "#1e1e1e",
-                      color: "#fff",
+                      border: "1px solid #ccc",
+                      backgroundColor: "#f5f5f5",
+                      color: "#111",
                     }}
                   />
                   <input
@@ -364,9 +361,9 @@ export default function CarritoPage() {
                     style={{
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #555",
-                      backgroundColor: "#1e1e1e",
-                      color: "#fff",
+                      border: "1px solid #ccc",
+                      backgroundColor: "#f5f5f5",
+                      color: "#111",
                     }}
                   />
                 </div>
@@ -382,8 +379,8 @@ export default function CarritoPage() {
                     onClick={() => setMostrarPago(false)}
                     style={{
                       padding: "0.7rem 1.2rem",
-                      backgroundColor: "#555",
-                      color: "#fff",
+                      backgroundColor: "#ddd",
+                      color: "#111",
                       border: "none",
                       borderRadius: "6px",
                       cursor: "pointer",
@@ -395,7 +392,7 @@ export default function CarritoPage() {
                     onClick={handlePagar}
                     style={{
                       padding: "0.7rem 1.2rem",
-                      backgroundColor: "#28a745",
+                      backgroundColor: "#4f46e5",
                       color: "white",
                       border: "none",
                       borderRadius: "6px",
@@ -408,7 +405,13 @@ export default function CarritoPage() {
               </div>
             )
           ) : (
-            <p style={{ textAlign: "center", color: "#ff4d4f", fontWeight: "bold" }}>
+            <p
+              style={{
+                textAlign: "center",
+                color: "#ff4d4f",
+                fontWeight: "bold",
+              }}
+            >
               ❌ Debes iniciar sesión para poder pagar
             </p>
           )}
@@ -417,4 +420,3 @@ export default function CarritoPage() {
     </div>
   );
 }
-
