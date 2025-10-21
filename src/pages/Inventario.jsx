@@ -1,22 +1,44 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import "./Inventario.css";
 
-export default function Inventario({ usuario }) {
+export default function Inventario() {
+  // Estado del usuario (tomado desde localStorage)
+  const [usuario, setUsuario] = useState(null);
   const [productos, setProductos] = useState([]);
   const [nombre, setNombre] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [precio, setPrecio] = useState("");
 
-  // Cargar productos desde localStorage
+  // Cargar usuario desde localStorage al iniciar
   useEffect(() => {
-    const todos = JSON.parse(localStorage.getItem("productos")) || [];
-    setProductos(todos);
+    const stored = localStorage.getItem("usuarioActual");
+    if (stored) {
+      setUsuario(JSON.parse(stored));
+    }
   }, []);
 
-  // Guardar cambios en localStorage
+  // Cargar productos del usuario actual
   useEffect(() => {
-    localStorage.setItem("productos", JSON.stringify(productos));
-  }, [productos]);
+    if (!usuario) return;
 
+    const todos = JSON.parse(localStorage.getItem("productos")) || [];
+    const propios = todos.filter((p) => p.vendedorId === usuario.id);
+    setProductos(propios);
+  }, [usuario]);
+
+  // Guardar productos respetando los de otros vendedores
+  useEffect(() => {
+    if (!usuario) return;
+
+    const todos = JSON.parse(localStorage.getItem("productos")) || [];
+    const otros = todos.filter((p) => p.vendedorId !== usuario.id);
+    localStorage.setItem(
+      "productos",
+      JSON.stringify([...otros, ...productos])
+    );
+  }, [productos, usuario]);
+
+  // Agregar producto
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!usuario) {
@@ -24,15 +46,16 @@ export default function Inventario({ usuario }) {
       return;
     }
 
-    const sellerNombre = usuario?.nombre || usuario?.email || "Vendedor";
-    const sellerId = usuario?.id || usuario?.email || sellerNombre.toLowerCase().replace(/\s+/g, "");
+    const total = (Number(cantidad) * Number(precio)).toFixed(2);
 
     const nuevoProducto = {
       id: Date.now(),
-      nombre: nombre.trim(),
+      nombre,
       cantidad: Number(cantidad),
       precio: Number(precio),
-      vendedor: { nombre: sellerNombre, id: sellerId }
+      total,
+      vendedor: usuario.nombre || usuario.email,
+      vendedorId: usuario.id,
     };
 
     setProductos([nuevoProducto, ...productos]);
@@ -41,20 +64,29 @@ export default function Inventario({ usuario }) {
     setPrecio("");
   };
 
+  // Eliminar producto
   const handleEliminar = (id) => {
-    const filtrados = productos.filter((p) => p.id !== id);
-    setProductos(filtrados);
+    const nuevos = productos.filter((p) => p.id !== id);
+    setProductos(nuevos);
   };
 
+  if (!usuario) {
+    return (
+      <main>
+        <h2>Debes iniciar sesión para ver tu inventario</h2>
+      </main>
+    );
+  }
+
   return (
-    <main style={{ maxWidth: 900, margin: "2rem auto", padding: "0 1rem" }}>
+    <main>
       <header>
         <h1>📦 Sistema de Gestión de Inventario</h1>
       </header>
 
-      <section style={{ marginBottom: 24 }}>
+      <section className="form-section">
         <h2>Agregar Producto</h2>
-        <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
+        <form onSubmit={handleSubmit}>
           <input
             type="text"
             placeholder="Nombre del producto"
@@ -81,19 +113,21 @@ export default function Inventario({ usuario }) {
         </form>
       </section>
 
-      <section>
+      <section className="tabla-section">
         <h2>Inventario Actual</h2>
         {productos.length === 0 ? (
-          <p>No tienes productos en tu inventario.</p>
+          <p style={{ textAlign: "center", marginTop: 10 }}>
+            No tienes productos en tu inventario.
+          </p>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <table>
             <thead>
               <tr>
                 <th>Producto</th>
                 <th>Cantidad</th>
                 <th>Precio ($)</th>
                 <th>Total</th>
-                <th>Vendedor</th>
+                <th>Vendido por</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -103,10 +137,15 @@ export default function Inventario({ usuario }) {
                   <td>{p.nombre}</td>
                   <td>{p.cantidad}</td>
                   <td>${p.precio.toFixed(2)}</td>
-                  <td>${(p.cantidad * p.precio).toFixed(2)}</td>
-                  <td>{p.vendedor?.nombre}</td>
+                  <td>${p.total}</td>
+                  <td>{p.vendedor}</td>
                   <td>
-                    <button onClick={() => handleEliminar(p.id)}>Eliminar</button>
+                    <button
+                      onClick={() => handleEliminar(p.id)}
+                      className="eliminar"
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -115,7 +154,7 @@ export default function Inventario({ usuario }) {
         )}
       </section>
 
-      <footer style={{ marginTop: 24 }}>
+      <footer>
         <p>© 2025 Sistema de Inventario | Hecho por 🧠</p>
       </footer>
     </main>
