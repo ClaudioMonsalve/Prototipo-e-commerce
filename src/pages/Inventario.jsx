@@ -50,7 +50,7 @@ export default function Inventario() {
       total,
       descripcion: "Producto agregado desde el inventario.",
       imagen: "https://via.placeholder.com/150",
-      vendedor: usuarioActivo,
+      vendedor: { nombre: usuarioActivo },
       categoria: "Inventario"
     };
 
