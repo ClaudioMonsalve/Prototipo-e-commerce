@@ -3,34 +3,43 @@ import "./Inventario.css";
 
 export default function Inventario() {
   const [productos, setProductos] = useState([]);
+
   const [nombre, setNombre] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [precio, setPrecio] = useState("");
 
-  const vendedorActual = "miTienda"; // Simula el usuario logueado
-
-  // Cargar productos de localStorage al iniciar
+  // Cargar productos desde localStorage al iniciar
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("inventario")) || [];
+    const stored = JSON.parse(localStorage.getItem("productos")) || [];
     setProductos(stored);
   }, []);
 
   // Guardar productos en localStorage cada vez que cambien
   useEffect(() => {
-    localStorage.setItem("inventario", JSON.stringify(productos));
+    localStorage.setItem("productos", JSON.stringify(productos));
   }, [productos]);
 
+  // Agregar producto
   const handleSubmit = (e) => {
     e.preventDefault();
     const total = (Number(cantidad) * Number(precio)).toFixed(2);
 
+    // obtener usuario activo si existe
+    const vendedorActivo =
+      JSON.parse(localStorage.getItem("usuarioActivo"))?.nombre ||
+      localStorage.getItem("usuarioActivo") ||
+      "Vendedor Anónimo";
+
     const nuevoProducto = {
       id: Date.now(),
       nombre,
-      cantidad: Number(cantidad),
+      cantidad,
       precio: Number(precio),
-      total: Number(total),
-      vendedor: vendedorActual,
+      total,
+      descripcion: "Producto agregado desde el inventario.",
+      imagen: "https://via.placeholder.com/150",
+      vendedor: vendedorActivo,
+      categoria: "Inventario"
     };
 
     setProductos([nuevoProducto, ...productos]);
@@ -40,6 +49,7 @@ export default function Inventario() {
     setPrecio("");
   };
 
+  // Eliminar producto
   const handleEliminar = (id) => {
     setProductos(productos.filter((p) => p.id !== id));
   };
@@ -92,24 +102,22 @@ export default function Inventario() {
             </tr>
           </thead>
           <tbody>
-            {productos
-              .filter((p) => p.vendedor === vendedorActual) // solo mis productos
-              .map((p) => (
-                <tr key={p.id}>
-                  <td>{p.nombre}</td>
-                  <td>{p.cantidad}</td>
-                  <td>${p.precio.toFixed(2)}</td>
-                  <td>${p.total.toFixed(2)}</td>
-                  <td>
-                    <button
-                      className="eliminar"
-                      onClick={() => handleEliminar(p.id)}
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
+            {productos.map((p) => (
+              <tr key={p.id}>
+                <td>{p.nombre}</td>
+                <td>{p.cantidad}</td>
+                <td>${Number(p.precio).toFixed(2)}</td>
+                <td>${p.total}</td>
+                <td>
+                  <button
+                    onClick={() => handleEliminar(p.id)}
+                    className="eliminar"
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </section>
@@ -120,3 +128,5 @@ export default function Inventario() {
     </main>
   );
 }
+
+
