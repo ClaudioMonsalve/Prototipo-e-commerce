@@ -3,47 +3,38 @@ import "./Inventario.css";
 
 export default function Inventario() {
   const [productos, setProductos] = useState([]);
-  const [usuarioActivo, setUsuarioActivo] = useState("");
-
   const [nombre, setNombre] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [precio, setPrecio] = useState("");
+  const [usuarioActivo, setUsuarioActivo] = useState("Vendedor Anónimo");
 
-  // ✅ Cargar usuario activo solo en el navegador
+  // Cargar usuario activo correctamente
   useEffect(() => {
     try {
       const data = localStorage.getItem("usuarioActivo");
-      if (data) {
-        const parsed = JSON.parse(data);
-        setUsuarioActivo(parsed?.nombre || data);
-      } else {
-        setUsuarioActivo("Vendedor Anónimo");
-      }
+      if (!data) return; // si no hay usuario activo, queda Anónimo
+
+      const parsed = JSON.parse(data);
+      setUsuarioActivo(parsed?.nombre || String(data));
     } catch {
       setUsuarioActivo("Vendedor Anónimo");
     }
   }, []);
 
-  // ✅ Cargar productos desde localStorage al iniciar
+  // Cargar productos del usuario actual
   useEffect(() => {
-    if (!usuarioActivo) return; // Esperar a que se cargue el usuario
-
     const todos = JSON.parse(localStorage.getItem("productos")) || [];
     const propios = todos.filter((p) => p.vendedor === usuarioActivo);
     setProductos(propios);
   }, [usuarioActivo]);
 
-  // ✅ Guardar productos sin borrar los de otros vendedores
+  // Guardar productos sin perder los de otros vendedores
   useEffect(() => {
-    if (!usuarioActivo) return;
-    if (productos.length === 0) return;
-
     const todos = JSON.parse(localStorage.getItem("productos")) || [];
     const otros = todos.filter((p) => p.vendedor !== usuarioActivo);
     localStorage.setItem("productos", JSON.stringify([...otros, ...productos]));
   }, [productos, usuarioActivo]);
 
-  // ➕ Agregar producto
   const handleSubmit = (e) => {
     e.preventDefault();
     const total = (Number(cantidad) * Number(precio)).toFixed(2);
@@ -66,7 +57,6 @@ export default function Inventario() {
     setPrecio("");
   };
 
-  // 🗑️ Eliminar producto
   const handleEliminar = (id) => {
     const nuevos = productos.filter((p) => p.id !== id);
     setProductos(nuevos);
@@ -80,11 +70,6 @@ export default function Inventario() {
     <main>
       <header>
         <h1>📦 Sistema de Gestión de Inventario</h1>
-        {usuarioActivo && (
-          <p style={{ textAlign: "center", marginTop: "5px", color: "#444" }}>
-            Sesión activa: <strong>{usuarioActivo}</strong>
-          </p>
-        )}
       </header>
 
       <section className="form-section">
