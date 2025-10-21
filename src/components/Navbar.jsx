@@ -61,7 +61,7 @@ export default function Navbar({ usuario, setUsuario }) {
         <Link to="/" style={{ textDecoration: "none", color: "#fff", fontWeight: 800, fontSize: 18 }}>Mi Tienda</Link>
         <nav style={{ display: "flex", gap: 12, marginLeft: 8 }}>
           <Link to="/" style={{ color: "#d1d5db", textDecoration: "none", fontSize: 14 }}>Inicio</Link>
-          {showDashboard && <Link to="/dashboard" style={{ color: "#d1d5db", textDecoration: "none", fontSize: 14 }}>Dashboard</Link>}
+          {showDashboard && <Link to="/inventario" style={{ color: "#d1d5db", textDecoration: "none", fontSize: 14 }}>Inventario</Link>}
         </nav>
       </div>
 

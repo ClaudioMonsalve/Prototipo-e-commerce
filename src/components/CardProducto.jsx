@@ -38,7 +38,6 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
         nombre: productoToAdd.nombre || "Sin nombre",
         precio: Number(productoToAdd.precio) || 0,
         imagen: productoToAdd.imagen || "https://via.placeholder.com/150",
-        // opcional: mantener id si existe, ayuda a futuras comparaciones
         id: productoToAdd.id ?? null,
       };
 
@@ -53,7 +52,6 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
   };
 
   const handleAgregar = () => {
-    // Si se pasó una función por props (Home pasa onAgregar={addToCart}), usarla
     if (typeof onAgregar === "function") {
       onAgregar(producto);
       // compatibilidad: si alguien usa el event listener en Navbar

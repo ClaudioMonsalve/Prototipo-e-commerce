@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Registro from "./pages/Registro";
 import Dashboard from "./pages/Dashboard";
 import TiendaVendedor from "./pages/TiendaVendedor";
+import Inventario from './pages/Inventario';
 
 // Contexto del carrito
 export const CartContext = createContext({
@@ -101,6 +102,7 @@ function App() {
           <Route path="/registro" element={<Registro />} />
           <Route path="/dashboard" element={<Dashboard usuario={usuario} />} />
           <Route path="/tienda/:sellerKey" element={<TiendaVendedor />} />
+          <Route path="/inventario" element={<Inventario />} />
         </Routes>
       </Router>
     </CartContext.Provider>
