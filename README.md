@@ -37,7 +37,7 @@ vite.config.js
 .eslintrc.js  
 
 ---
-
+```
 ## 🧩 Componentes Principales
 
 ### `Navbar.jsx`
