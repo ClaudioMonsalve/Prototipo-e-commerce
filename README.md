@@ -35,9 +35,6 @@ index.html
 package.json
 vite.config.js
 .eslintrc.js
-
-
-
 ---
 
 ## 🧩 Componentes Principales
