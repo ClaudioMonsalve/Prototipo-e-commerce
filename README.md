@@ -15,7 +15,7 @@ Está diseñado como ejemplo educativo o base para desarrollos más completos.
 
 ---
 
-## 📂 Estructura del proyecto
+<details> <summary>📂 Estructura de carpetas</summary>
 
 public/                  # Archivos estáticos
 src/
@@ -35,7 +35,7 @@ index.html
 package.json
 vite.config.js
 .eslintrc.js
-
+</details>
 ---
 
 ## 🧩 Componentes Principales
