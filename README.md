@@ -15,7 +15,7 @@ Está diseñado como ejemplo educativo o base para desarrollos más completos.
 
 ---
 
-# 📂 Estructura de carpetas    
+# 📂 Estructura de carpetas      
 
 📁 public/            # Archivos estáticos  
 📁 src/  
