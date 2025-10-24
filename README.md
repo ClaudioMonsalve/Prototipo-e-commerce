@@ -16,8 +16,10 @@ Está diseñado como ejemplo educativo o base para desarrollos más completos.
 ---
 
 # 📂 Estructura de carpetas
-- public.
-- src
+public.
+src.
+
+
 
 ---
 
