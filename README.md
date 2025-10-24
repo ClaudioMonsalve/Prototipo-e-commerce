@@ -15,25 +15,26 @@ Está diseñado como ejemplo educativo o base para desarrollos más completos.
 
 ---
 
-# 📂 Estructura de carpetas
-├─ public/ # Archivos estáticos  
-├─ src/  
-│ ├─ components/ # Componentes reutilizables  
-│ │ ├─ Navbar.jsx # Barra de navegación  
-│ │ └─ CardProduct.jsx # Tarjeta de producto  
-│ ├─ pages/ # Páginas principales  
-│ │ ├─ Home.jsx # Página de inicio  
-│ │ ├─ Login.jsx # Iniciar sesión  
-│ │ ├─ Registro.jsx # Registro de usuarios  
-│ │ ├─ TiendaVendedor.jsx # Ver productos de un vendedor  
-│ │ ├─ Inventario.jsx # Gestión de inventario del vendedor  
-│ │ └─ CarritoPage.jsx # Carrito de compras del cliente  
-│ ├─ App.jsx # Componente principal (rutas)  
-│ └─ main.jsx # Punto de entrada de la app  
-├─ index.html  
-├─ package.json  
-├─ vite.config.js  
-└─ .eslintrc.js   
+# 📂 Estructura de carpetas  
+📁 public/                  # Archivos estáticos  
+📁 src/  
+├─ 📁 components/           # Componentes reutilizables  
+│  ├─ Navbar.jsx            # Barra de navegación  
+│  └─ CardProduct.jsx       # Tarjeta de producto  
+├─ 📁 pages/                # Páginas principales  
+│  ├─ Home.jsx              # Página de inicio  
+│  ├─ Login.jsx             # Iniciar sesión  
+│  ├─ Registro.jsx          # Registro de usuarios  
+│  ├─ TiendaVendedor.jsx    # Ver productos de un vendedor  
+│  ├─ Inventario.jsx        # Gestión de inventario del vendedor  
+│  └─ CarritoPage.jsx       # Carrito de compras del cliente  
+├─ App.jsx                  # Componente principal (rutas)  
+└─ main.jsx                 # Punto de entrada de la app  
+index.html  
+package.json  
+vite.config.js  
+.eslintrc.js  
+ 
 ---
 
 ## 🧩 Componentes Principales
