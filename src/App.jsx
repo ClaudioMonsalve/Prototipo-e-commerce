@@ -5,7 +5,6 @@ import Home from "./pages/Home";
 import CarritoPage from "./pages/CarritoPage";
 import Login from "./pages/Login";
 import Registro from "./pages/Registro";
-import Dashboard from "./pages/Dashboard";
 import TiendaVendedor from "./pages/TiendaVendedor";
 import Inventario from './pages/Inventario';
 
@@ -100,7 +99,6 @@ function App() {
           <Route path="/carrito" element={<CarritoPage />} />
           <Route path="/login" element={<Login setUsuario={setUsuario} />} />
           <Route path="/registro" element={<Registro />} />
-          <Route path="/dashboard" element={<Dashboard usuario={usuario} />} />
           <Route path="/tienda/:sellerKey" element={<TiendaVendedor />} />
           <Route path="/inventario" element={<Inventario />} />
         </Routes>
