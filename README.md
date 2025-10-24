@@ -1,16 +1,144 @@
-# React + Vite
+# 🛒 Prototipo E-commerce con React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este proyecto es un **prototipo de e-commerce** desarrollado con **React** y **Vite**, pensado para gestionar productos, usuarios y ventas a nivel básico.  
+Está diseñado como ejemplo educativo o base para desarrollos más completos.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ⚛️ Stack Tecnológico
 
-## React Compiler
+- **React 18**: Interfaz de usuario basada en componentes.  
+- **Vite**: Bundler rápido con Hot Module Replacement (HMR).  
+- **CSS Modules / CSS simple**: Estilos por componente.  
+- **localStorage**: Simula base de datos (no se usa backend).  
+- **ESLint**: Reglas básicas para mantener código limpio.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 📂 Estructura del proyecto
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+├─ public/ # Archivos estáticos
+├─ src/
+│ ├─ components/ # Componentes reutilizables
+│ │ ├─ Navbar.jsx # Barra de navegación
+│ │ └─ CardProduct.jsx # Tarjeta de producto
+│ ├─ pages/ # Páginas principales
+│ │ ├─ Home.jsx # Página de inicio
+│ │ ├─ Login.jsx # Iniciar sesión
+│ │ ├─ Registro.jsx # Registro de usuarios
+│ │ ├─ TiendaVendedor.jsx # Ver productos de un vendedor
+│ │ ├─ Inventario.jsx # Gestión de inventario del vendedor
+│ │ └─ CarritoPage.jsx # Carrito de compras del cliente
+│ ├─ App.jsx # Componente principal (rutas)
+│ └─ main.jsx # Punto de entrada de la app
+├─ index.html
+├─ package.json
+├─ vite.config.js
+└─ .eslintrc.js
+
+
+---
+
+## 🧩 Componentes Principales
+
+### `Navbar.jsx`
+- Barra de navegación principal.  
+- Acceso a Inicio, Tienda, Inventario, Carrito y Login/Registro según usuario.
+
+### `CardProduct.jsx`
+- Tarjeta de producto reutilizable con **nombre, precio, imagen y cantidad**.  
+- Usada en la tienda y la Tienda del Vendedor.
+
+### `Home.jsx`
+- Página de inicio del e-commerce.  
+- Muestra productos destacados o información general.
+
+### `Login.jsx`
+- Inicia sesión como cliente o vendedor.  
+- Guarda información en **localStorage** (`usuarioActual`).
+
+### `Registro.jsx`
+- Registro de nuevos usuarios y vendedores.  
+- Datos guardados en **localStorage**.
+
+### `TiendaVendedor.jsx`
+- Muestra productos de un **vendedor específico**.  
+- Solo lectura: no permite editar/eliminar.
+
+### `Inventario.jsx`
+- Página para **vendedores**:  
+  - Ver productos actuales.  
+  - Agregar nuevos productos (nombre, cantidad, precio).  
+  - Eliminar productos existentes.  
+- Datos guardados en **localStorage** (`productos`) filtrados por `vendedorId`.
+
+### `CarritoPage.jsx`
+- Carrito de compras para clientes:  
+  - Ver productos agregados.  
+  - Ajustar cantidades y calcular total.  
+  - Persistencia con **localStorage**.
+
+### `App.jsx`
+- Contiene las **rutas de la aplicación** y determina qué página mostrar según estado del usuario.
+
+### `main.jsx`
+- Punto de entrada que monta `App` en el DOM de `index.html`.
+
+---
+
+## 💾 Almacenamiento de datos
+
+- `localStorage` simula base de datos:  
+  - `usuarioActual`: usuario conectado.  
+  - `productos`: productos de todos los vendedores.  
+  - `carrito`: productos seleccionados por clientes.
+
+---
+
+## 🚀 Scripts disponibles
+
+| Script             | Descripción                                         |
+|-------------------|---------------------------------------------------|
+| `npm run dev`      | Inicia servidor de desarrollo con HMR             |
+| `npm run build`    | Genera build optimizada para producción           |
+| `npm run preview`  | Sirve build de producción localmente             |
+| `npm run lint`     | Ejecuta ESLint para revisar errores              |
+
+---
+
+## 🎨 Estilos y diseño
+
+- CSS por componente o CSS global.  
+- Diseño **minimalista y responsivo** usando React y CSS.  
+- No se usan frameworks externos de UI.
+
+---
+
+## 🔧 Personalización y extensibilidad
+
+- **Agregar TypeScript**: renombrar `.jsx` a `.tsx` y configurar `tsconfig.json`.  
+- **React Compiler**: usar `@vitejs/plugin-react-swc` para optimizar HMR.  
+- **UI avanzada**: integrar Material UI, Chakra UI u otras librerías.  
+- **Migrar a backend real**: reemplazar `localStorage` con Firebase, Supabase o servidor propio.
+
+---
+
+## 📚 Recursos útiles
+
+- [React](https://reactjs.org/docs/getting-started.html)  
+- [Vite](https://vitejs.dev/)  
+- [ESLint](https://eslint.org/docs/latest/)  
+
+---
+
+## 📝 Resumen
+
+Este prototipo permite:
+
+- Gestión de productos para vendedores (`Inventario.jsx`)  
+- Visualización de productos por vendedor (`TiendaVendedor.jsx`)  
+- Carrito de compras para clientes (`CarritoPage.jsx`)  
+- Persistencia de datos mediante `localStorage`  
+
+> Base ideal para proyectos educativos, aprendizaje de **React + Vite** y manejo de estado/rutas.
+
