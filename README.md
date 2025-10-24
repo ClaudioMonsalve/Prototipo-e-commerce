@@ -16,10 +16,10 @@ Está diseñado como ejemplo educativo o base para desarrollos más completos.
 ---
 
 # 📂 Estructura de carpetas      
-
+```
 📁 public/            # Archivos estáticos  
 📁 src/  
-```📁 components/      # Componentes reutilizables  
+📁 components/      # Componentes reutilizables  
     Navbar.jsx        # Barra de navegación  
     CardProduct.jsx   # Tarjeta de producto  
   📁 pages/           # Páginas principales  
