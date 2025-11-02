@@ -2,14 +2,20 @@ import { useEffect, useState } from "react";
 import "./Inventario.css";
 
 export default function Inventario() {
-  // Estado del usuario (tomado desde localStorage)
+  // === Estados principales ===
   const [usuario, setUsuario] = useState(null);
   const [productos, setProductos] = useState([]);
+
+  // Campos base
   const [nombre, setNombre] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [precio, setPrecio] = useState("");
 
-  // Cargar usuario desde localStorage al iniciar
+  // Campos dinámicos según tipo de empresa
+  const [extra1, setExtra1] = useState("");
+  const [extra2, setExtra2] = useState("");
+
+  // === Cargar usuario al iniciar ===
   useEffect(() => {
     const stored = localStorage.getItem("usuarioActual");
     if (stored) {
@@ -17,28 +23,23 @@ export default function Inventario() {
     }
   }, []);
 
-  // Cargar productos del usuario actual
+  // === Cargar productos del usuario actual ===
   useEffect(() => {
     if (!usuario) return;
-
     const todos = JSON.parse(localStorage.getItem("productos")) || [];
     const propios = todos.filter((p) => p.vendedorId === usuario.id);
     setProductos(propios);
   }, [usuario]);
 
-  // Guardar productos respetando los de otros vendedores
+  // === Guardar productos ===
   useEffect(() => {
     if (!usuario) return;
-
     const todos = JSON.parse(localStorage.getItem("productos")) || [];
     const otros = todos.filter((p) => p.vendedorId !== usuario.id);
-    localStorage.setItem(
-      "productos",
-      JSON.stringify([...otros, ...productos])
-    );
+    localStorage.setItem("productos", JSON.stringify([...otros, ...productos]));
   }, [productos, usuario]);
 
-  // Agregar producto
+  // === Agregar producto ===
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!usuario) {
@@ -56,20 +57,116 @@ export default function Inventario() {
       total,
       vendedor: usuario.nombre || usuario.email,
       vendedorId: usuario.id,
+      tipoEmpresa: usuario.tipoEmpresa,
+      extra1,
+      extra2,
     };
 
     setProductos([nuevoProducto, ...productos]);
     setNombre("");
     setCantidad("");
     setPrecio("");
+    setExtra1("");
+    setExtra2("");
   };
 
-  // Eliminar producto
+  // === Eliminar producto ===
   const handleEliminar = (id) => {
     const nuevos = productos.filter((p) => p.id !== id);
     setProductos(nuevos);
   };
 
+  // === Renderizar preguntas personalizadas ===
+  const renderPreguntas = () => {
+    if (!usuario?.tipoEmpresa) return null;
+
+    switch (usuario.tipoEmpresa) {
+      case "mascotas":
+        return (
+          <>
+            <input
+              type="text"
+              placeholder="Tamaño del producto"
+              value={extra1}
+              onChange={(e) => setExtra1(e.target.value)}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Tipo de animal (perro, gato, etc.)"
+              value={extra2}
+              onChange={(e) => setExtra2(e.target.value)}
+              required
+            />
+          </>
+        );
+
+      case "ferreteria":
+        return (
+          <>
+            <input
+              type="text"
+              placeholder="Material o tipo de herramienta"
+              value={extra1}
+              onChange={(e) => setExtra1(e.target.value)}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Marca o proveedor"
+              value={extra2}
+              onChange={(e) => setExtra2(e.target.value)}
+              required
+            />
+          </>
+        );
+
+      case "ropa":
+        return (
+          <>
+            <input
+              type="text"
+              placeholder="Talla (S, M, L, XL...)"
+              value={extra1}
+              onChange={(e) => setExtra1(e.target.value)}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Color"
+              value={extra2}
+              onChange={(e) => setExtra2(e.target.value)}
+              required
+            />
+          </>
+        );
+
+      case "electronica":
+        return (
+          <>
+            <input
+              type="text"
+              placeholder="Modelo o especificaciones"
+              value={extra1}
+              onChange={(e) => setExtra1(e.target.value)}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Garantía (meses)"
+              value={extra2}
+              onChange={(e) => setExtra2(e.target.value)}
+              required
+            />
+          </>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  // === Vista principal ===
   if (!usuario) {
     return (
       <main>
@@ -82,8 +179,11 @@ export default function Inventario() {
     <main>
       <header>
         <h1>📦 Sistema de Gestión de Inventario</h1>
+        <p>Vendedor: {usuario.nombre}</p>
+        {usuario.tipoEmpresa && <p>Tipo de empresa: {usuario.tipoEmpresa}</p>}
       </header>
 
+      {/* === Formulario === */}
       <section className="form-section">
         <h2>Agregar Producto</h2>
         <form onSubmit={handleSubmit}>
@@ -109,10 +209,15 @@ export default function Inventario() {
             step="0.01"
             required
           />
+
+          {/* Preguntas adicionales */}
+          {renderPreguntas()}
+
           <button type="submit">Agregar</button>
         </form>
       </section>
 
+      {/* === Tabla === */}
       <section className="tabla-section">
         <h2>Inventario Actual</h2>
         {productos.length === 0 ? (
@@ -127,7 +232,8 @@ export default function Inventario() {
                 <th>Cantidad</th>
                 <th>Precio ($)</th>
                 <th>Total</th>
-                <th>Vendido por</th>
+                <th>Extra 1</th>
+                <th>Extra 2</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -138,7 +244,8 @@ export default function Inventario() {
                   <td>{p.cantidad}</td>
                   <td>${p.precio.toFixed(2)}</td>
                   <td>${p.total}</td>
-                  <td>{p.vendedor}</td>
+                  <td>{p.extra1}</td>
+                  <td>{p.extra2}</td>
                   <td>
                     <button
                       onClick={() => handleEliminar(p.id)}

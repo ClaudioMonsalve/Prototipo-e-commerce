@@ -5,7 +5,8 @@ export default function Registro() {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rol, setRol] = useState("comprador"); // 'comprador' o 'vendedor'
+  const [rol, setRol] = useState("comprador");
+  const [tipoEmpresa, setTipoEmpresa] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -17,7 +18,7 @@ export default function Registro() {
       return;
     }
 
-    if (usuarios.some(u => u.email === email)) {
+    if (usuarios.some((u) => u.email === email)) {
       alert("Email ya registrado");
       return;
     }
@@ -27,17 +28,15 @@ export default function Registro() {
       nombre: nombre || (email.split?.("@")?.[0] ?? "Usuario"),
       email,
       password,
-      rol, // guardamos el rol para lógica (vendedor/comprador)
+      rol,
+      tipoEmpresa: rol === "vendedor" ? tipoEmpresa : null, // solo aplica si es vendedor
     };
 
     usuarios.push(usuario);
     localStorage.setItem("usuarios", JSON.stringify(usuarios));
-
-    // guardar como usuario actual (sesión simple)
     localStorage.setItem("usuarioActual", JSON.stringify(usuario));
 
-    // si es vendedor, su nombre queda disponible en usuarioActual.vendedor cuando cree productos
-    navigate("/");
+    navigate("/login");
   };
 
   return (
@@ -45,34 +44,111 @@ export default function Registro() {
       <h2>Registro</h2>
 
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
+        {/* Nombre */}
         <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           Nombre
-          <input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Tu nombre" style={{ padding: 8, borderRadius: 6, border: "1px solid #ccc" }} />
+          <input
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            placeholder="Tu nombre"
+            style={{
+              padding: 8,
+              borderRadius: 6,
+              border: "1px solid #ccc",
+            }}
+          />
         </label>
 
+        {/* Email */}
         <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           Email
-          <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tucorreo@ejemplo.com" style={{ padding: 8, borderRadius: 6, border: "1px solid #ccc" }} />
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="tucorreo@ejemplo.com"
+            style={{
+              padding: 8,
+              borderRadius: 6,
+              border: "1px solid #ccc",
+            }}
+          />
         </label>
 
+        {/* Contraseña */}
         <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           Contraseña
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" style={{ padding: 8, borderRadius: 6, border: "1px solid #ccc" }} />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            style={{
+              padding: 8,
+              borderRadius: 6,
+              border: "1px solid #ccc",
+            }}
+          />
         </label>
 
+        {/* Rol */}
         <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           Soy
-          <select value={rol} onChange={(e) => setRol(e.target.value)} style={{ padding: 8, borderRadius: 6 }}>
+          <select
+            value={rol}
+            onChange={(e) => setRol(e.target.value)}
+            style={{ padding: 8, borderRadius: 6 }}
+          >
             <option value="comprador">Comprador</option>
             <option value="vendedor">Vendedor</option>
           </select>
         </label>
 
+        {/* Tipo de empresa — solo visible si es vendedor */}
+        {rol === "vendedor" && (
+          <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            Tipo de empresa
+            <select
+              value={tipoEmpresa}
+              onChange={(e) => setTipoEmpresa(e.target.value)}
+              style={{ padding: 8, borderRadius: 6 }}
+              required
+            >
+              <option value="">Selecciona tu tipo de empresa</option>
+              <option value="mascotas">Accesorios para Mascotas</option>
+              <option value="ferreteria">Venta de Herramientas</option>
+              <option value="ropa">Tienda de Ropa</option>
+              <option value="electronica">Electrónica</option>
+            </select>
+          </label>
+        )}
+
+        {/* Botones */}
         <div style={{ display: "flex", gap: 8 }}>
-          <button type="submit" style={{ padding: "10px 14px", background: "#4f46e5", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+          <button
+            type="submit"
+            style={{
+              padding: "10px 14px",
+              background: "#4f46e5",
+              color: "#fff",
+              border: "none",
+              borderRadius: 8,
+              cursor: "pointer",
+            }}
+          >
             Registrarse
           </button>
-          <button type="button" onClick={() => navigate("/login")} style={{ padding: "10px 14px", borderRadius: 8, border: "1px solid #ddd", background: "#4f46e5", cursor: "pointer" }}>
+
+          <button
+            type="button"
+            onClick={() => navigate("/login")}
+            style={{
+              padding: "10px 14px",
+              borderRadius: 8,
+              border: "1px solid #ddd",
+              background: "#4f46e5",
+              cursor: "pointer",
+            }}
+          >
             Ir a Login
           </button>
         </div>
