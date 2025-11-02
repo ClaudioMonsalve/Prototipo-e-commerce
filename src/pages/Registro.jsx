@@ -29,14 +29,15 @@ export default function Registro() {
       email,
       password,
       rol,
-      tipoEmpresa: rol === "vendedor" ? tipoEmpresa : null, // solo aplica si es vendedor
+      tipoEmpresa: rol === "vendedor" ? tipoEmpresa : null,
     };
 
     usuarios.push(usuario);
     localStorage.setItem("usuarios", JSON.stringify(usuarios));
     localStorage.setItem("usuarioActual", JSON.stringify(usuario));
 
-    navigate("/login");
+    alert("Registro exitoso. Ahora puedes iniciar sesión.");
+    navigate("/login"); // 👈 redirige al login después de registrarse
   };
 
   return (
