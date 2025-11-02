@@ -11,66 +11,51 @@ export default function CarritoPage() {
     cvv: "",
   });
 
-  // Obtener usuario actual
   const usuarioActual = JSON.parse(localStorage.getItem("usuarioActual"));
 
+  // === Cargar carrito agrupado ===
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("carrito")) || [];
-    if (stored.length === 0) {
-      setCarrito([]);
-      return;
-    }
+    if (stored.length === 0) return setCarrito([]);
 
-    const carritoMap = {};
+    const agrupado = {};
     stored.forEach((p) => {
-      const precioNum = Number(p.precio) || 0;
-      if (carritoMap[p.nombre]) {
-        carritoMap[p.nombre].cantidad += 1;
-      } else {
-        carritoMap[p.nombre] = { ...p, cantidad: 1, precio: precioNum };
-      }
+      const key = p.nombre;
+      if (!agrupado[key]) agrupado[key] = { ...p, cantidad: 1 };
+      else agrupado[key].cantidad += 1;
     });
-    setCarrito(Object.values(carritoMap));
+    setCarrito(Object.values(agrupado));
   }, []);
 
-  const actualizarLocalStorage = (nuevoCarrito) => {
-    const listaExpandida = [];
-    nuevoCarrito.forEach((p) => {
-      const precioNum = Number(p.precio) || 0;
+  const actualizarLocalStorage = (nuevo) => {
+    const lista = [];
+    nuevo.forEach((p) => {
       for (let i = 0; i < p.cantidad; i++) {
-        listaExpandida.push({
-          nombre: p.nombre,
-          precio: precioNum,
-          imagen: p.imagen,
-        });
+        lista.push(p);
       }
     });
-    localStorage.setItem("carrito", JSON.stringify(listaExpandida));
-
-    // Actualiza contador en Navbar si tienes
+    localStorage.setItem("carrito", JSON.stringify(lista));
     window.dispatchEvent(new Event("carritoActualizado"));
   };
 
-  const incrementar = (index) => {
+  const incrementar = (i) => {
     const nuevo = [...carrito];
-    nuevo[index].cantidad += 1;
+    nuevo[i].cantidad += 1;
     setCarrito(nuevo);
     actualizarLocalStorage(nuevo);
   };
 
-  const decrementar = (index) => {
+  const decrementar = (i) => {
     const nuevo = [...carrito];
-    nuevo[index].cantidad -= 1;
-    if (nuevo[index].cantidad === 0) {
-      nuevo.splice(index, 1);
-    }
+    nuevo[i].cantidad -= 1;
+    if (nuevo[i].cantidad === 0) nuevo.splice(i, 1);
     setCarrito(nuevo);
     actualizarLocalStorage(nuevo);
   };
 
-  const eliminar = (index) => {
+  const eliminar = (i) => {
     const nuevo = [...carrito];
-    nuevo.splice(index, 1);
+    nuevo.splice(i, 1);
     setCarrito(nuevo);
     actualizarLocalStorage(nuevo);
   };
@@ -84,7 +69,6 @@ export default function CarritoPage() {
       alert("❌ Debes iniciar sesión para poder pagar");
       return;
     }
-
     if (carrito.length === 0) {
       alert("El carrito está vacío");
       return;
@@ -114,7 +98,6 @@ export default function CarritoPage() {
     localStorage.removeItem("carrito");
     setDatosTarjeta({ nombre: "", numero: "", vencimiento: "", cvv: "" });
     setMostrarPago(false);
-
     window.dispatchEvent(new Event("carritoActualizado"));
   };
 
@@ -129,21 +112,10 @@ export default function CarritoPage() {
         color: "#f5f5f5",
       }}
     >
-      <h1
-        style={{
-          textAlign: "center",
-          marginBottom: "2rem",
-          fontSize: "1.8rem",
-          color: "#fff",
-        }}
-      >
-        🛒 Tu Carrito
-      </h1>
+      <h1 style={{ textAlign: "center", marginBottom: "2rem" }}>🛒 Tu Carrito</h1>
 
       {carrito.length === 0 ? (
-        <div style={{ textAlign: "center", fontSize: "1.1rem" }}>
-          <p>El carrito está vacío</p>
-        </div>
+        <p style={{ textAlign: "center" }}>El carrito está vacío</p>
       ) : (
         <>
           <table
@@ -154,7 +126,6 @@ export default function CarritoPage() {
               backgroundColor: "#2a2a2a",
               borderRadius: "10px",
               overflow: "hidden",
-              color: "#f5f5f5",
             }}
           >
             <thead>
@@ -167,87 +138,107 @@ export default function CarritoPage() {
               </tr>
             </thead>
             <tbody>
-              {carrito.map((p, i) => {
-                const precio = Number(p.precio) || 0;
-                return (
-                  <tr
-                    key={i}
+              {carrito.map((p, i) => (
+                <tr
+                  key={i}
+                  style={{
+                    textAlign: "center",
+                    borderBottom: "1px solid #444",
+                  }}
+                >
+                  <td
                     style={{
-                      textAlign: "center",
-                      borderBottom: "1px solid #444",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1rem",
+                      padding: "0.5rem",
+                      textAlign: "left",
                     }}
                   >
-                    <td
+                    <img
+                      src={p.imagen}
+                      alt={p.nombre}
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "1rem",
-                        padding: "0.5rem",
+                        width: "80px",
+                        height: "80px",
+                        objectFit: "cover",
+                        borderRadius: "6px",
+                      }}
+                    />
+                    <div>
+                      <strong>{p.nombre}</strong>
+                      {/* Mostrar extras solo si existen */}
+                      <div
+                        style={{
+                          fontSize: "0.9rem",
+                          color: "#aaa",
+                          marginTop: "0.3rem",
+                        }}
+                      >
+                        {p.extra1?.label && p.extra1?.value ? (
+                          <p style={{ margin: 0 }}>
+                            <strong>{p.extra1.label}:</strong> {p.extra1.value}
+                          </p>
+                        ) : null}
+                        {p.extra2?.label && p.extra2?.value ? (
+                          <p style={{ margin: 0 }}>
+                            <strong>{p.extra2.label}:</strong> {p.extra2.value}
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
+                  </td>
+
+                  <td>${(Number(p.precio) || 0).toFixed(2)}</td>
+                  <td>
+                    <button
+                      onClick={() => decrementar(i)}
+                      style={{
+                        marginRight: "0.5rem",
+                        backgroundColor: "#ddd",
+                        color: "#111",
+                        border: "none",
+                        padding: "0.3rem 0.6rem",
+                        borderRadius: "4px",
+                        cursor: "pointer",
                       }}
                     >
-                      <img
-                        src={p.imagen}
-                        alt={p.nombre}
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          objectFit: "cover",
-                          borderRadius: "6px",
-                        }}
-                      />
-                      <span>{p.nombre}</span>
-                    </td>
-                    <td>${precio.toFixed(2)}</td>
-                    <td>
-                      <button
-                        onClick={() => decrementar(i)}
-                        style={{
-                          marginRight: "0.5rem",
-                          backgroundColor: "#ddd",
-                          color: "#111",
-                          border: "none",
-                          padding: "0.3rem 0.6rem",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        -
-                      </button>
-                      {p.cantidad}
-                      <button
-                        onClick={() => incrementar(i)}
-                        style={{
-                          marginLeft: "0.5rem",
-                          backgroundColor: "#ddd",
-                          color: "#111",
-                          border: "none",
-                          padding: "0.3rem 0.6rem",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        +
-                      </button>
-                    </td>
-                    <td>${(precio * p.cantidad).toFixed(2)}</td>
-                    <td>
-                      <button
-                        onClick={() => eliminar(i)}
-                        style={{
-                          backgroundColor: "#4f46e5",
-                          color: "white",
-                          border: "none",
-                          padding: "0.4rem 0.8rem",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Eliminar
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+                      -
+                    </button>
+                    {p.cantidad}
+                    <button
+                      onClick={() => incrementar(i)}
+                      style={{
+                        marginLeft: "0.5rem",
+                        backgroundColor: "#ddd",
+                        color: "#111",
+                        border: "none",
+                        padding: "0.3rem 0.6rem",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      +
+                    </button>
+                  </td>
+                  <td>${((Number(p.precio) || 0) * p.cantidad).toFixed(2)}</td>
+                  <td>
+                    <button
+                      onClick={() => eliminar(i)}
+                      style={{
+                        backgroundColor: "#4f46e5",
+                        color: "white",
+                        border: "none",
+                        padding: "0.4rem 0.8rem",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
 
@@ -262,6 +253,7 @@ export default function CarritoPage() {
             Total: ${totalGeneral}
           </div>
 
+          {/* === Pago === */}
           {usuarioActual ? (
             !mostrarPago ? (
               <div style={{ textAlign: "right" }}>
@@ -286,17 +278,10 @@ export default function CarritoPage() {
                   padding: "1rem",
                   borderRadius: "8px",
                   marginTop: "1rem",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
                   color: "#111",
                 }}
               >
-                <h2
-                  style={{
-                    marginBottom: "1rem",
-                    fontSize: "1.3rem",
-                    color: "#4f46e5",
-                  }}
-                >
+                <h2 style={{ marginBottom: "1rem", color: "#4f46e5" }}>
                   Datos de la Tarjeta
                 </h2>
                 <div
@@ -318,7 +303,6 @@ export default function CarritoPage() {
                       borderRadius: "6px",
                       border: "1px solid #ccc",
                       backgroundColor: "#f5f5f5",
-                      color: "#111",
                     }}
                   />
                   <input
@@ -333,7 +317,6 @@ export default function CarritoPage() {
                       borderRadius: "6px",
                       border: "1px solid #ccc",
                       backgroundColor: "#f5f5f5",
-                      color: "#111",
                     }}
                   />
                   <input
@@ -341,14 +324,16 @@ export default function CarritoPage() {
                     placeholder="MM/AA"
                     value={datosTarjeta.vencimiento}
                     onChange={(e) =>
-                      setDatosTarjeta({ ...datosTarjeta, vencimiento: e.target.value })
+                      setDatosTarjeta({
+                        ...datosTarjeta,
+                        vencimiento: e.target.value,
+                      })
                     }
                     style={{
                       padding: "0.6rem",
                       borderRadius: "6px",
                       border: "1px solid #ccc",
                       backgroundColor: "#f5f5f5",
-                      color: "#111",
                     }}
                   />
                   <input
@@ -363,7 +348,6 @@ export default function CarritoPage() {
                       borderRadius: "6px",
                       border: "1px solid #ccc",
                       backgroundColor: "#f5f5f5",
-                      color: "#111",
                     }}
                   />
                 </div>

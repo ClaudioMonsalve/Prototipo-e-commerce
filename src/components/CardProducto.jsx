@@ -1,76 +1,74 @@
 import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import { CartContext } from "../App"; // ajusta la ruta si hace falta
+import { CartContext } from "../App";
 
 export default function CardProducto({ producto = {}, onAgregar = null }) {
   const [hover, setHover] = useState(false);
-  const precioNum = Number(producto.precio) || 0;
   const { addToCart } = useContext(CartContext) || {};
 
+  const precioNum = Number(producto.precio) || 0;
   const vendedorNombre =
     producto.vendedor?.nombre ||
     producto.vendedorNombre ||
     producto.vendedor ||
     producto.tienda ||
-    producto.sellerName ||
-    producto.seller ||
     "Vendedor";
 
   const vendedorKey =
     producto.vendedor?.id ||
     producto.vendedorId ||
-    producto.sellerId ||
     producto.vendedor?.email ||
     producto.email ||
     vendedorNombre;
 
-  const categoria = producto.categoria || producto.tipo || "Sin categoría";
+  const descripcion = producto.descripcion || "Descripción no disponible.";
+  const stock = producto.cantidad || producto.stock || "Sin dato";
 
+  // Detectar extras dinámicos
+  const extra1Label = producto.extra1?.label || "Extra 1";
+  const extra1Value = producto.extra1?.value || "—";
+  const extra2Label = producto.extra2?.label || "Extra 2";
+  const extra2Value = producto.extra2?.value || "—";
+
+  // Guardar producto en carrito (localStorage)
   const fallbackAddToLocalStorage = (productoToAdd) => {
-    // En tu app el carrito en localStorage era una lista de "unidades".
-    // Para mantener compatibilidad con CarritoPage que agrupa por nombre,
-    // añadimos una unidad por cada click (no usamos objeto {cantidad:1} aquí).
     try {
       const lista = JSON.parse(localStorage.getItem("carrito")) || [];
 
-      // crear unidad mínima que usas en el resto del código
+      // 🔧 aseguramos que los extras se copien si existen
       const unidad = {
         nombre: productoToAdd.nombre || "Sin nombre",
         precio: Number(productoToAdd.precio) || 0,
         imagen: productoToAdd.imagen || "https://via.placeholder.com/150",
-        // opcional: mantener id si existe, ayuda a futuras comparaciones
         id: productoToAdd.id ?? null,
+        extra1: productoToAdd.extra1
+          ? productoToAdd.extra1
+          : { label: "Extra 1", value: productoToAdd.extra1 || "" },
+        extra2: productoToAdd.extra2
+          ? productoToAdd.extra2
+          : { label: "Extra 2", value: productoToAdd.extra2 || "" },
       };
 
       lista.push(unidad);
       localStorage.setItem("carrito", JSON.stringify(lista));
-
-      // evento de compatibilidad para Navbars que escuchan window
       window.dispatchEvent(new Event("carritoActualizado"));
     } catch (e) {
-      console.error("Error al actualizar localStorage carrito:", e);
+      console.error("Error al actualizar carrito:", e);
     }
   };
 
+
   const handleAgregar = () => {
-    // Si se pasó una función por props (Home pasa onAgregar={addToCart}), usarla
     if (typeof onAgregar === "function") {
       onAgregar(producto);
-      // compatibilidad: si alguien usa el event listener en Navbar
       window.dispatchEvent(new Event("carritoActualizado"));
       return;
     }
-
-    // Si existe contexto (recomendado), usarlo
     if (typeof addToCart === "function") {
       addToCart(producto);
-      // no estrictamente necesario si App sincroniza localStorage en useEffect,
-      // pero mantener event por compatibilidad con código aún dependiente.
       window.dispatchEvent(new Event("carritoActualizado"));
       return;
     }
-
-    // Fallback: si no hay contexto ni prop, escribir directamente en localStorage
     fallbackAddToLocalStorage(producto);
   };
 
@@ -78,9 +76,8 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
     <article
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      aria-label={producto.nombre || "Producto"}
       style={{
-        width: 240,
+        width: 260,
         borderRadius: 14,
         overflow: "hidden",
         background: "#fff",
@@ -91,104 +88,131 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
         transition: "all 180ms ease",
         display: "flex",
         flexDirection: "column",
-        fontFamily:
-          "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
+        fontFamily: "Inter, system-ui, sans-serif",
       }}
     >
-      <div style={{ position: "relative", height: 150, background: "#f7f7fb" }}>
+      {/* Imagen */}
+      <div style={{ position: "relative", height: 160, background: "#f7f7fb" }}>
         <img
-          src={producto.imagen || "https://via.placeholder.com/400x300?text=Producto"}
+          src={
+            producto.imagen ||
+            "https://via.placeholder.com/400x300?text=Producto"
+          }
           alt={producto.nombre || "Producto"}
-          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
-        <div
-          style={{
-            position: "absolute",
-            left: 10,
-            top: 10,
-            background:
-              "linear-gradient(90deg, rgba(100,103,255,0.95), rgba(138,107,255,0.95))",
-            color: "#fff",
-            padding: "6px 8px",
-            borderRadius: 8,
-            fontSize: 12,
-            fontWeight: 700,
-          }}
-        >
-          {categoria}
-        </div>
       </div>
 
-      <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
-        <h3 style={{ margin: 0, fontSize: 16, color: "#101827", lineHeight: 1.2 }}>
-          {producto.nombre || "Sin nombre"}
+      {/* Información */}
+      <div
+        style={{
+          padding: 14,
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+          flex: 1,
+        }}
+      >
+        <h3 style={{ margin: 0, fontSize: 16, color: "#101827" }}>
+          {producto.nombre || "Producto sin nombre"}
         </h3>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-          <p style={{ margin: "4px 0 0", fontSize: 13, color: "#6b7280", flex: 1 }}>
-            {producto.descripcion && producto.descripcion.length > 90
-              ? producto.descripcion.slice(0, 90).trim() + "…"
-              : producto.descripcion || "Descripción breve del producto."}
+        <p style={{ fontSize: 13, color: "#6b7280", margin: 0 }}>
+          {descripcion.length > 80
+            ? descripcion.slice(0, 80) + "…"
+            : descripcion}
+        </p>
+
+        {/* Info extra */}
+        <div style={{ fontSize: 13, color: "#4b5563", marginTop: 6 }}>
+          <p style={{ margin: 2 }}>
+            <strong>Stock:</strong> {stock}
           </p>
+          {extra1Value !== "—" && (
+            <p style={{ margin: 2 }}>
+              <strong>{extra1Label}:</strong> {extra1Value}
+            </p>
+          )}
+          {extra2Value !== "—" && (
+            <p style={{ margin: 2 }}>
+              <strong>{extra2Label}:</strong> {extra2Value}
+            </p>
+          )}
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div
+        {/* Vendedor */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            marginTop: 10,
+          }}
+        >
+          <div
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: "50%",
+              background: "#eef2ff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#4f46e5",
+              fontWeight: "bold",
+            }}
+          >
+            {vendedorNombre[0]?.toUpperCase() || "V"}
+          </div>
+          <Link
+            to={`/tienda/${encodeURIComponent(String(vendedorKey))}`}
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <span style={{ fontSize: 12, color: "#6b7280" }}>
+                Vendido por
+              </span>
+              <strong style={{ fontSize: 13, color: "#0f172a" }}>
+                {vendedorNombre}
+              </strong>
+            </div>
+          </Link>
+        </div>
+
+        {/* Precio y botón */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: "auto",
+          }}
+        >
+          <div>
+            <span style={{ fontSize: 12, color: "#6b7280" }}>Precio</span>
+            <strong
               style={{
-                width: 32,
-                height: 32,
-                borderRadius: 999,
-                background: "#eef2ff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#4f46e5",
-                fontWeight: 700,
-                fontSize: 12,
-                flexShrink: 0,
+                fontSize: 16,
+                color: "#0f172a",
+                display: "block",
               }}
             >
-              {vendedorNombre[0]?.toUpperCase() || "V"}
-            </div>
-
-            <Link to={`/tienda/${encodeURIComponent(String(vendedorKey))}`} style={{ textDecoration: "none", color: "inherit" }}>
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <span style={{ fontSize: 12, color: "#6b7280" }}>Vendido por</span>
-                <strong style={{ fontSize: 13, color: "#0f172a" }}>{vendedorNombre}</strong>
-              </div>
-            </Link>
-          </div>
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto", gap: 8 }}>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ fontSize: 12, color: "#6b7280" }}>Precio</span>
-            <strong style={{ fontSize: 16, color: "#0f172a" }}>${precioNum.toFixed(2)}</strong>
+              ${precioNum.toFixed(2)}
+            </strong>
           </div>
 
           <button
             onClick={handleAgregar}
-            aria-label={`Agregar ${producto.nombre || "producto"} al carrito`}
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "8px 12px",
-              borderRadius: 10,
-              border: "none",
-              cursor: "pointer",
               background: "linear-gradient(90deg,#5b60ff,#8a6bff)",
               color: "#fff",
+              border: "none",
+              padding: "8px 12px",
+              borderRadius: 10,
+              cursor: "pointer",
               fontWeight: 700,
-              boxShadow: "0 6px 18px rgba(91,96,255,0.18)",
             }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M3 3h2l.4 2M7 13h10l4-8H5.4" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-              <circle cx="10" cy="20" r="1" fill="white" />
-              <circle cx="18" cy="20" r="1" fill="white" />
-            </svg>
             Agregar
           </button>
         </div>

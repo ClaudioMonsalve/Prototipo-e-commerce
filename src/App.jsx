@@ -62,17 +62,42 @@ function App() {
 
   // Función para agregar productos al carrito
   const addToCart = (producto) => {
-    if (!producto) return;
-    const unidad = {
-      nombre: producto.nombre || "Sin nombre",
-      precio: Number(producto.precio) || 0,
-      imagen: producto.imagen || "https://via.placeholder.com/150",
-    };
-    const current = JSON.parse(localStorage.getItem("carrito")) || [];
-    current.push(unidad);
-    localStorage.setItem("carrito", JSON.stringify(current));
-    setCartCount(current.length);
+    try {
+      const lista = JSON.parse(localStorage.getItem("carrito")) || [];
+
+      // Clonamos el producto completo, asegurando extras
+      const item = {
+        nombre: producto.nombre || "Sin nombre",
+        precio: Number(producto.precio) || 0,
+        imagen: producto.imagen || "https://via.placeholder.com/150",
+        id: producto.id ?? null,
+        tipoEmpresa: producto.tipoEmpresa || null,
+
+        // ✅ Guarda correctamente extras con etiqueta y valor
+        extra1:
+          producto.extra1 && producto.extra1.label
+            ? producto.extra1
+            : producto.extra1
+            ? { label: "Extra 1", value: producto.extra1 }
+            : null,
+
+        extra2:
+          producto.extra2 && producto.extra2.label
+            ? producto.extra2
+            : producto.extra2
+            ? { label: "Extra 2", value: producto.extra2 }
+            : null,
+      };
+
+      lista.push(item);
+      localStorage.setItem("carrito", JSON.stringify(lista));
+      setCarrito(lista);
+      window.dispatchEvent(new Event("carritoActualizado"));
+    } catch (e) {
+      console.error("❌ Error al agregar al carrito:", e);
+    }
   };
+
 
   // Escuchar cambios en localStorage (ej. otra pestaña)
   useEffect(() => {
