@@ -29,7 +29,7 @@ export default function Login({ setUsuario }) {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "2rem auto" }}>
+    <div style={{ maxWidth: "400px", margin: "2rem auto", color: "#1e1e1e" }}>
       <h2>Iniciar Sesión</h2>
       <form onSubmit={handleLogin}>
         <input type="email" placeholder="Correo" value={email} onChange={(e) => setEmail(e.target.value)} required style={{ display: "block", marginBottom: "1rem", width: "100%" }} />

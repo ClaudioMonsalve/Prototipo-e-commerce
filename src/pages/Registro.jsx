@@ -40,12 +40,12 @@ export default function Registro() {
   };
 
   return (
-    <main style={{ maxWidth: 700, margin: "2rem auto", padding: "0 1rem" }}>
+    <main style={{ maxWidth: 700, margin: "2rem auto", padding: "0 1rem", color: "#1e1e1e" }}>
       <h2>Registro</h2>
 
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
         {/* Nombre */}
-        <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <label style={{ display: "flex", flexDirection: "column", gap: 6, color: "#1e1e1e" }}>
           Nombre
           <input
             value={nombre}
@@ -60,7 +60,7 @@ export default function Registro() {
         </label>
 
         {/* Email */}
-        <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <label style={{ display: "flex", flexDirection: "column", gap: 6 , color: "#1e1e1e"}}>
           Email
           <input
             value={email}
@@ -75,7 +75,7 @@ export default function Registro() {
         </label>
 
         {/* Contraseña */}
-        <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <label style={{ display: "flex", flexDirection: "column", gap: 6, color: "#1e1e1e" }}>
           Contraseña
           <input
             type="password"
@@ -96,7 +96,7 @@ export default function Registro() {
           <select
             value={rol}
             onChange={(e) => setRol(e.target.value)}
-            style={{ padding: 8, borderRadius: 6 }}
+            style={{ padding: 8, borderRadius: 6 , color: "#1e1e1e"}}
           >
             <option value="comprador">Comprador</option>
             <option value="vendedor">Vendedor</option>
@@ -105,7 +105,7 @@ export default function Registro() {
 
         {/* Tipo de empresa fijo para vendedor */}
         {rol === "vendedor" && (
-          <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <label style={{ display: "flex", flexDirection: "column", gap: 6, color: "#1e1e1e" }}>
             Tipo de empresa
             <input
               value="Venta de Herramientas"
@@ -144,6 +144,7 @@ export default function Registro() {
               padding: "10px 14px",
               borderRadius: 8,
               border: "1px solid #ddd",
+              color: "#fff",
               background: "#4f46e5",
               cursor: "pointer",
             }}
