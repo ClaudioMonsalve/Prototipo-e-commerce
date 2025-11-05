@@ -6,13 +6,13 @@ import CarritoPage from "./pages/CarritoPage";
 import Login from "./pages/Login";
 import Registro from "./pages/Registro";
 import TiendaVendedor from "./pages/TiendaVendedor";
-import Inventario from './pages/Inventario';
+import Inventario from "./pages/Inventario";
 
-// Contexto del carrito
+// 🛒 Contexto del carrito
 export const CartContext = createContext({
   addToCart: () => {},
   cartCount: 0,
-  setCartCount: () => {}, // 🔥 agregar setCartCount para poder actualizar desde otros componentes
+  setCartCount: () => {},
 });
 
 function App() {
@@ -20,32 +20,56 @@ function App() {
     JSON.parse(localStorage.getItem("usuarioActual"))
   );
 
-  // Inicializar productos de ejemplo si no existen
+  // ✅ Cargar productos de ejemplo si no existen
   useEffect(() => {
     const existentes = JSON.parse(localStorage.getItem("productos")) || [];
     if (existentes.length === 0) {
       const productosEjemplo = [
         {
+          id: 1,
           nombre: "Camiseta Rock",
+          descripcion: "Camiseta 100% algodón con estampado de banda.",
+          marca: "RockStore",
           precio: 25.99,
+          tipoHerramienta: "",
+          tamaño: "",
+          cantidad: 10,
           imagen: "https://via.placeholder.com/150?text=Camiseta",
           vendedor: { nombre: "RockStore", id: "rockstore" },
         },
         {
+          id: 2,
           nombre: "Zapatos Deportivos",
+          descripcion: "Zapatos de entrenamiento ultraligeros.",
+          marca: "Sporty",
           precio: 49.99,
+          tipoHerramienta: "",
+          tamaño: "",
+          cantidad: 5,
           imagen: "https://via.placeholder.com/150?text=Zapatos",
           vendedor: { nombre: "Sporty", id: "sporty" },
         },
         {
+          id: 3,
           nombre: "Mochila Urbana",
+          descripcion: "Resistente al agua y con múltiples compartimentos.",
+          marca: "UrbanShop",
           precio: 35.5,
+          tipoHerramienta: "",
+          tamaño: "",
+          cantidad: 15,
           imagen: "https://via.placeholder.com/150?text=Mochila",
           vendedor: { nombre: "UrbanShop", id: "urbanshop" },
         },
         {
+          id: 4,
           nombre: "Gorra Cool",
+          descripcion: "Gorra ajustable estilo urbano.",
+          marca: "CapWorld",
           precio: 15.0,
+          tipoHerramienta: "",
+          tamaño: "",
+          cantidad: 8,
           imagen: "https://via.placeholder.com/150?text=Gorra",
           vendedor: { nombre: "CapWorld", id: "capworld" },
         },
@@ -54,26 +78,34 @@ function App() {
     }
   }, []);
 
-  // contador del carrito (número total de unidades)
+  // 🧮 Contador del carrito (número total de unidades)
   const [cartCount, setCartCount] = useState(() => {
     const stored = JSON.parse(localStorage.getItem("carrito")) || [];
     return stored.length;
   });
 
-  // Función para agregar productos al carrito
+  // ✅ Función para agregar productos al carrito (ahora con todos los detalles)
   const addToCart = (producto) => {
     try {
       const lista = JSON.parse(localStorage.getItem("carrito")) || [];
 
-      // Clonamos el producto completo, asegurando extras
       const item = {
+        id: producto.id ?? Date.now(),
         nombre: producto.nombre || "Sin nombre",
+        descripcion: producto.descripcion || "",
+        marca: producto.marca || "",
+        tipoHerramienta: producto.tipoHerramienta || "",
+        tamaño: producto.tamaño || "",
+        cantidad: 1, // unidad agregada
         precio: Number(producto.precio) || 0,
-        imagen: producto.imagen || "https://via.placeholder.com/150",
-        id: producto.id ?? null,
+        imagen:
+          producto.imagen && producto.imagen.trim() !== ""
+            ? producto.imagen
+            : "https://via.placeholder.com/150?text=Sin+Imagen",
+        vendedor: producto.vendedor || null,
         tipoEmpresa: producto.tipoEmpresa || null,
 
-        // ✅ Guarda correctamente extras con etiqueta y valor
+        // Extras dinámicos si existen
         extra1:
           producto.extra1 && producto.extra1.label
             ? producto.extra1
@@ -91,15 +123,14 @@ function App() {
 
       lista.push(item);
       localStorage.setItem("carrito", JSON.stringify(lista));
-      setCarrito(lista);
+      setCartCount(lista.length);
       window.dispatchEvent(new Event("carritoActualizado"));
     } catch (e) {
       console.error("❌ Error al agregar al carrito:", e);
     }
   };
 
-
-  // Escuchar cambios en localStorage (ej. otra pestaña)
+  // 🔁 Escuchar cambios de localStorage (otras pestañas)
   useEffect(() => {
     const onStorage = (e) => {
       if (e.key === "carrito") {

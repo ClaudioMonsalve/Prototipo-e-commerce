@@ -1,16 +1,16 @@
-* {
-  margin: 0;
-  padding: 0;
+.inventario-page * {
   box-sizing: border-box;
   font-family: 'Segoe UI', sans-serif;
 }
 
-body {
-  background-color: #f5f7fa;
+.inventario-page {
+  background-color: #ffffff;
   color: #333;
+  min-height: 100vh;
+  padding-bottom: 2rem;
 }
 
-header {
+.inventario-page header {
   background-color: #007bff;
   color: white;
   text-align: center;
@@ -18,45 +18,65 @@ header {
   margin-bottom: 1.5rem;
 }
 
-main {
+.inventario-page main {
   width: 90%;
   max-width: 800px;
   margin: auto;
 }
 
-h2 {
+.inventario-page h2 {
   margin-bottom: 0.5rem;
   color: #007bff;
 }
 
-.form-section {
+.inventario-page .form-section {
   background: white;
-  padding: 1rem;
+  padding: 1.2rem 1.5rem;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   margin-bottom: 2rem;
 }
 
-input, button {
-  padding: 0.5rem;
-  margin: 0.3rem;
-  border-radius: 5px;
+/* === Inputs, selects, textarea === */
+.inventario-page input,
+.inventario-page button,
+.inventario-page select,
+.inventario-page textarea {
+  padding: 0.7rem 0.9rem;
+  margin: 0.4rem 0;
+  border-radius: 8px;
   border: 1px solid #ccc;
+  font-size: 15px;
+  width: 100%;
+  transition: all 0.2s ease;
 }
 
-button {
+.inventario-page input:focus,
+.inventario-page select:focus,
+.inventario-page textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.4);
+  outline: none;
+}
+
+/* === Botones === */
+.inventario-page button {
   background-color: #007bff;
   color: white;
   border: none;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  font-size: 15px;
   cursor: pointer;
   transition: 0.3s;
 }
 
-button:hover {
+.inventario-page button:hover {
   background-color: #0056b3;
 }
 
-table {
+/* === Tabla === */
+.inventario-page table {
   width: 100%;
   border-collapse: collapse;
   background: white;
@@ -65,28 +85,54 @@ table {
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-th, td {
+.inventario-page th,
+.inventario-page td {
   padding: 0.8rem;
   text-align: center;
   border-bottom: 1px solid #ddd;
 }
 
-th {
+.inventario-page th {
   background-color: #007bff;
   color: white;
 }
 
-.eliminar {
+.inventario-page tr:nth-child(even) {
+  background-color: #f8f9fb;
+}
+
+/* === Botón eliminar === */
+.inventario-page .eliminar {
   background-color: #dc3545;
 }
 
-.eliminar:hover {
+.inventario-page .eliminar:hover {
   background-color: #a71d2a;
 }
 
-footer {
+/* === Footer === */
+.inventario-page footer {
   text-align: center;
   margin-top: 2rem;
   padding: 1rem;
   color: #666;
+}
+
+/* === Filas del formulario === */
+.inventario-page .form-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inventario-page .fila {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.inventario-page .fila input,
+.inventario-page .fila select {
+  flex: 1;
+  min-width: 45%;
 }

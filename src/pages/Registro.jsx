@@ -6,7 +6,6 @@ export default function Registro() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rol, setRol] = useState("comprador");
-  const [tipoEmpresa, setTipoEmpresa] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -29,7 +28,7 @@ export default function Registro() {
       email,
       password,
       rol,
-      tipoEmpresa: rol === "vendedor" ? tipoEmpresa : null,
+      tipoEmpresa: rol === "vendedor" ? "Venta de Herramientas" : null,
     };
 
     usuarios.push(usuario);
@@ -37,7 +36,7 @@ export default function Registro() {
     localStorage.setItem("usuarioActual", JSON.stringify(usuario));
 
     alert("Registro exitoso. Ahora puedes iniciar sesión.");
-    navigate("/login"); // 👈 redirige al login después de registrarse
+    navigate("/login");
   };
 
   return (
@@ -104,22 +103,21 @@ export default function Registro() {
           </select>
         </label>
 
-        {/* Tipo de empresa — solo visible si es vendedor */}
+        {/* Tipo de empresa fijo para vendedor */}
         {rol === "vendedor" && (
           <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             Tipo de empresa
-            <select
-              value={tipoEmpresa}
-              onChange={(e) => setTipoEmpresa(e.target.value)}
-              style={{ padding: 8, borderRadius: 6 }}
-              required
-            >
-              <option value="">Selecciona tu tipo de empresa</option>
-              <option value="mascotas">Accesorios para Mascotas</option>
-              <option value="ferreteria">Venta de Herramientas</option>
-              <option value="ropa">Tienda de Ropa</option>
-              <option value="electronica">Electrónica</option>
-            </select>
+            <input
+              value="Venta de Herramientas"
+              readOnly
+              style={{
+                padding: 8,
+                borderRadius: 6,
+                border: "1px solid #ccc",
+                background: "#f3f3f3",
+                color: "#555",
+              }}
+            />
           </label>
         )}
 

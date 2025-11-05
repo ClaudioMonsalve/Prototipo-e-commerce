@@ -73,7 +73,7 @@ export default function Home() {
   return (
     <main style={{ maxWidth: 1100, margin: "2rem auto", padding: "0 1rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-        <h2 style={{ margin: 0 }}>Productos</h2>
+        <h2 style={{color: "#444", margin: 0 }}>Productos</h2>
 
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <form onSubmit={submitSearch} style={{ display: "flex", gap: 8, alignItems: "center" }}>

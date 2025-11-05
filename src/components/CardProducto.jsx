@@ -35,12 +35,15 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
     try {
       const lista = JSON.parse(localStorage.getItem("carrito")) || [];
 
-      // 🔧 aseguramos que los extras se copien si existen
       const unidad = {
         nombre: productoToAdd.nombre || "Sin nombre",
         precio: Number(productoToAdd.precio) || 0,
         imagen: productoToAdd.imagen || "https://via.placeholder.com/150",
         id: productoToAdd.id ?? null,
+        descripcion: productoToAdd.descripcion || "",
+        marca: productoToAdd.marca || "",
+        tipoHerramienta: productoToAdd.tipoHerramienta || "",
+        tamaño: productoToAdd.tamaño || "",
         extra1: productoToAdd.extra1
           ? productoToAdd.extra1
           : { label: "Extra 1", value: productoToAdd.extra1 || "" },
@@ -56,7 +59,6 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
       console.error("Error al actualizar carrito:", e);
     }
   };
-
 
   const handleAgregar = () => {
     if (typeof onAgregar === "function") {
@@ -117,17 +119,37 @@ export default function CardProducto({ producto = {}, onAgregar = null }) {
           {producto.nombre || "Producto sin nombre"}
         </h3>
 
+        {/* Descripción corta */}
         <p style={{ fontSize: 13, color: "#6b7280", margin: 0 }}>
           {descripcion.length > 80
             ? descripcion.slice(0, 80) + "…"
             : descripcion}
         </p>
 
-        {/* Info extra */}
+        {/* Info adicional */}
         <div style={{ fontSize: 13, color: "#4b5563", marginTop: 6 }}>
           <p style={{ margin: 2 }}>
             <strong>Stock:</strong> {stock}
           </p>
+
+          {/* Nuevos datos desde el Inventario */}
+          {producto.marca && (
+            <p style={{ margin: 2 }}>
+              <strong>Marca:</strong> {producto.marca}
+            </p>
+          )}
+          {producto.tipoHerramienta && (
+            <p style={{ margin: 2 }}>
+              <strong>Tipo:</strong> {producto.tipoHerramienta}
+            </p>
+          )}
+          {producto.tamaño && (
+            <p style={{ margin: 2 }}>
+              <strong>Tamaño:</strong> {producto.tamaño}
+            </p>
+          )}
+
+          {/* Extras antiguos (si existen) */}
           {extra1Value !== "—" && (
             <p style={{ margin: 2 }}>
               <strong>{extra1Label}:</strong> {extra1Value}

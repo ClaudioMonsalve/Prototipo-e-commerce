@@ -20,7 +20,7 @@ export default function CarritoPage() {
 
     const agrupado = {};
     stored.forEach((p) => {
-      const key = p.nombre;
+      const key = p.id || p.nombre; // usar ID si existe
       if (!agrupado[key]) agrupado[key] = { ...p, cantidad: 1 };
       else agrupado[key].cantidad += 1;
     });
@@ -131,12 +131,14 @@ export default function CarritoPage() {
             <thead>
               <tr style={{ backgroundColor: "#333" }}>
                 <th style={{ padding: "0.8rem" }}>Producto</th>
+                <th>Detalles</th>
                 <th>Precio</th>
                 <th>Cantidad</th>
                 <th>Total</th>
                 <th>Acciones</th>
               </tr>
             </thead>
+
             <tbody>
               {carrito.map((p, i) => (
                 <tr
@@ -146,12 +148,13 @@ export default function CarritoPage() {
                     borderBottom: "1px solid #444",
                   }}
                 >
+                  {/* 🧱 Producto */}
                   <td
                     style={{
                       display: "flex",
                       alignItems: "center",
                       gap: "1rem",
-                      padding: "0.5rem",
+                      padding: "0.8rem",
                       textAlign: "left",
                     }}
                   >
@@ -166,30 +169,59 @@ export default function CarritoPage() {
                       }}
                     />
                     <div>
-                      <strong>{p.nombre}</strong>
-                      {/* Mostrar extras solo si existen */}
-                      <div
-                        style={{
-                          fontSize: "0.9rem",
-                          color: "#aaa",
-                          marginTop: "0.3rem",
-                        }}
-                      >
-                        {p.extra1?.label && p.extra1?.value ? (
-                          <p style={{ margin: 0 }}>
-                            <strong>{p.extra1.label}:</strong> {p.extra1.value}
-                          </p>
-                        ) : null}
-                        {p.extra2?.label && p.extra2?.value ? (
-                          <p style={{ margin: 0 }}>
-                            <strong>{p.extra2.label}:</strong> {p.extra2.value}
-                          </p>
-                        ) : null}
-                      </div>
+                      <strong style={{ fontSize: "1rem", color: "#fff" }}>
+                        {p.nombre}
+                      </strong>
+                      {/* Solo mostrar descripción si existe */}
+                      {p.descripcion && (
+                        <p
+                          style={{
+                            fontSize: "0.85rem",
+                            color: "#bbb",
+                            margin: "4px 0 0 0",
+                          }}
+                        >
+                          {p.descripcion.length > 80
+                            ? p.descripcion.slice(0, 80) + "…"
+                            : p.descripcion}
+                        </p>
+                      )}
                     </div>
                   </td>
 
+                  {/* 🧰 Detalles */}
+                  <td style={{ fontSize: "0.9rem", color: "#ddd" }}>
+                    {p.marca && (
+                      <p style={{ margin: "2px 0" }}>
+                        <strong>Marca:</strong> {p.marca}
+                      </p>
+                    )}
+                    {p.tipoHerramienta && (
+                      <p style={{ margin: "2px 0" }}>
+                        <strong>Tipo:</strong> {p.tipoHerramienta}
+                      </p>
+                    )}
+                    {p.tamaño && (
+                      <p style={{ margin: "2px 0" }}>
+                        <strong>Tamaño:</strong> {p.tamaño}
+                      </p>
+                    )}
+                    {p.extra1?.label && p.extra1?.value && (
+                      <p style={{ margin: "2px 0" }}>
+                        <strong>{p.extra1.label}:</strong> {p.extra1.value}
+                      </p>
+                    )}
+                    {p.extra2?.label && p.extra2?.value && (
+                      <p style={{ margin: "2px 0" }}>
+                        <strong>{p.extra2.label}:</strong> {p.extra2.value}
+                      </p>
+                    )}
+                  </td>
+
+                  {/* 💲 Precio */}
                   <td>${(Number(p.precio) || 0).toFixed(2)}</td>
+
+                  {/* 🔢 Cantidad */}
                   <td>
                     <button
                       onClick={() => decrementar(i)}
@@ -221,7 +253,11 @@ export default function CarritoPage() {
                       +
                     </button>
                   </td>
+
+                  {/* 💰 Total */}
                   <td>${((Number(p.precio) || 0) * p.cantidad).toFixed(2)}</td>
+
+                  {/* 🗑️ Acciones */}
                   <td>
                     <button
                       onClick={() => eliminar(i)}
@@ -242,6 +278,7 @@ export default function CarritoPage() {
             </tbody>
           </table>
 
+          {/* === Total y Pago === */}
           <div
             style={{
               textAlign: "right",
@@ -253,7 +290,6 @@ export default function CarritoPage() {
             Total: ${totalGeneral}
           </div>
 
-          {/* === Pago === */}
           {usuarioActual ? (
             !mostrarPago ? (
               <div style={{ textAlign: "right" }}>
@@ -298,12 +334,6 @@ export default function CarritoPage() {
                     onChange={(e) =>
                       setDatosTarjeta({ ...datosTarjeta, nombre: e.target.value })
                     }
-                    style={{
-                      padding: "0.6rem",
-                      borderRadius: "6px",
-                      border: "1px solid #ccc",
-                      backgroundColor: "#f5f5f5",
-                    }}
                   />
                   <input
                     type="text"
@@ -312,12 +342,6 @@ export default function CarritoPage() {
                     onChange={(e) =>
                       setDatosTarjeta({ ...datosTarjeta, numero: e.target.value })
                     }
-                    style={{
-                      padding: "0.6rem",
-                      borderRadius: "6px",
-                      border: "1px solid #ccc",
-                      backgroundColor: "#f5f5f5",
-                    }}
                   />
                   <input
                     type="text"
@@ -329,12 +353,6 @@ export default function CarritoPage() {
                         vencimiento: e.target.value,
                       })
                     }
-                    style={{
-                      padding: "0.6rem",
-                      borderRadius: "6px",
-                      border: "1px solid #ccc",
-                      backgroundColor: "#f5f5f5",
-                    }}
                   />
                   <input
                     type="text"
@@ -343,12 +361,6 @@ export default function CarritoPage() {
                     onChange={(e) =>
                       setDatosTarjeta({ ...datosTarjeta, cvv: e.target.value })
                     }
-                    style={{
-                      padding: "0.6rem",
-                      borderRadius: "6px",
-                      border: "1px solid #ccc",
-                      backgroundColor: "#f5f5f5",
-                    }}
                   />
                 </div>
                 <div
